@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
 app = Flask(__name__)
-app.secret_key = 'trdsfgdnhjmkmnhcfgxdcfgvbhjnmkjnhcf'
+app.secret_key = 'super secret key'
 
 DATA_DIR = 'data'
 
@@ -37,24 +37,29 @@ def index():
 @app.route('/signin', methods=['POST'])
 def signin():
     if request.method == 'POST':
-        username = request.form['user']
-        password = request.form['pass']
-        users = load_json('users.json')
-        for user in users:
-            if user['username'] == username and user['password'] == password:
-                session['username'] = username
-                session['role'] = user['role']
-                return redirect(url_for('dashboard'))
-        return 'Invalid credentials', 401
-    return redirect(url_for('index'))
+        try:
+            data = request.get_json()
+            username = data['user']
+            password = data['pass']
+            users = load_json('users.json')
 
+            for user in users:
+                if user['username'] == username and user['password'] == password:
+                    session['username'] = username
+                    session['role'] = user['role']
+                    return '', 200 # Возвращаем пустой ответ и 200 OK
+            return 'Invalid credentials', 401 # Возвращаем ошибку если не подошел
+        except Exception as e:
+            print(e)
+            return 'Error parsing JSON', 400 # Возвращаем ошибку если не получилось спарсить json
+
+    return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['user']
         password = request.form['pass']
-
         users = load_json('users.json')
         new_user = {
             'id': get_next_id(users),
@@ -85,5 +90,5 @@ def logout():
     return redirect(url_for('index'))
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
