@@ -1,19 +1,19 @@
-// password1 = document.getElementById("pass").value
-// password2 = document.getElementById("rep_pass").value
+document.querySelector('#signin').addEventListener('submit', function (e) {
+    e.preventDefault();
+});
 
-// console.log(4)
 
 RegButton.onclick = function () {
     pass = document.getElementById('pass').value;
     pass_rep = document.getElementById('rep_pass').value;
     uname = document.getElementById('user').value;
-    console.log(pass);
-    console.log(pass_rep);
+
     if (pass == pass_rep) {
-        console.log(1)
+        delta = document.getElementById("wrong_pass");
+        delta.style.display = "none"
     }
     else {
-        console.log(0)
+        delta = document.getElementById("wrong_pass");
+        delta.style.display = "block"
     }
-
-};
+}
