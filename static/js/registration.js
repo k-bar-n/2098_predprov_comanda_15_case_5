@@ -1,6 +1,6 @@
-document.querySelector('#signin').addEventListener('submit', function (e) {
-    e.preventDefault();
-});
+//document.querySelector('#signin').addEventListener('submit', function (e) {
+//    e.preventDefault();
+//});
 
 
 RegButton.onclick = function () {
@@ -16,4 +16,9 @@ RegButton.onclick = function () {
         delta = document.getElementById("wrong_pass");
         delta.style.display = "block"
     }
+}
+
+logButton.onclick = function() {
+    pass = document.getElementById('pass').value;
+    uname = document.getElementById('user').value;
 }

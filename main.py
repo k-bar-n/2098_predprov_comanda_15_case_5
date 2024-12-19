@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
 app = Flask(__name__)
-app.secret_key = 'super secret key'
+app.secret_key = 'trdsfgdnhjmkmnhcfgxdcfgvbhjnmkjnhcf'
 
 DATA_DIR = 'data'
 
