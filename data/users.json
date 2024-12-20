@@ -2,7 +2,7 @@
     {
         "id": 1,
         "username": "admin",
-        "password": "pa",
+        "password": "pass",
         "role": "admin"
     }
 ]

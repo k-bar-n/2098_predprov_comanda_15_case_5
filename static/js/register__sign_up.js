@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const userInp = document.getElementById('user');
     const passInput = document.getElementById('pass');
     const repPassInput = document.getElementById('rep_pass');
-    const passStatus = document.getElementById('pass_status');
+    const errorMessage = document.getElementById('error-message');
     const successMessage = document.querySelector('.success-message');
     const continueButton = document.createElement('button');
 
@@ -18,16 +18,18 @@ document.addEventListener('DOMContentLoaded', function () {
     passInput.disabled = true;
     passInput.style.opacity = 0.5;
     continueButton.style.display = 'none';
+    regButton.disabled = false;
+
 
     userInp.addEventListener('input', function () {
         if (userInp.value) {
             continueButton.style.display = 'block';
-            passStatus.style.display = 'none';
+            errorMessage.style.display = 'none';
             regButton.style.display = "none"
             regButton.classList.remove('slide-in-left')
         } else {
             continueButton.style.display = 'none';
-            passStatus.style.display = 'none';
+            errorMessage.style.display = 'none';
             regButton.style.display = "none"
             regButton.classList.remove('slide-in-left')
         }
@@ -51,9 +53,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     repPassInput.disabled = true;
                     passInput.style.opacity = 0.5;
                     repPassInput.style.opacity = 0.5;
-                    passStatus.textContent = "Пользователь с таким именем уже существует";
-                    passStatus.style.color = "red";
-                    passStatus.style.display = "block";
+                    showErrorMessage(
+                        "Пользователь с таким именем уже существует",
+                        errorMessage
+                    );
                     regButton.style.display = 'none';
                     regButton.classList.remove('slide-in-left')
                 } else {
@@ -63,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         repPassInput.disabled = false;
                         repPassInput.style.opacity = 1;
                     }
-                    passStatus.style.display = "none"
+                    errorMessage.style.display = "none"
                 }
                 return !userExists;
             })
@@ -91,17 +94,22 @@ document.addEventListener('DOMContentLoaded', function () {
     function updatePasswordStatus() {
         if (repPassInput.value && passInput.value) {
             if (passInput.value !== repPassInput.value) {
-                passStatus.textContent = "Пароли не совпадают";
-                passStatus.style.color = 'red';
+                showErrorMessage("Пароли не совпадают", errorMessage);
                 regButton.style.display = "none"
                 regButton.classList.remove('slide-in-left')
             } else {
-                passStatus.textContent = "Пароли совпадают";
-                passStatus.style.color = 'green';
+                if (passInput.value.length < 6) {
+                    showErrorMessage("Пароль слишком короткий (минимум 6 символов)", errorMessage);
+                    regButton.style.display = "none"
+                    regButton.classList.remove('slide-in-left')
+                } else {
+                    errorMessage.textContent = "Пароли совпадают";
+                    errorMessage.style.color = 'green';
+                }
             }
-            passStatus.style.display = "block"
+            errorMessage.style.display = "block";
         } else {
-            passStatus.style.display = "none"
+            errorMessage.style.display = "none";
             regButton.style.display = "none"
             regButton.classList.remove('slide-in-left')
         }
@@ -109,34 +117,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
     passInput.addEventListener('input', function () {
         if (passInput.value && !userExists) {
-            repPassInput.disabled = false
-            repPassInput.style.opacity = 1
+            repPassInput.disabled = false;
+            repPassInput.style.opacity = 1;
         } else {
-            repPassInput.disabled = true
-            repPassInput.style.opacity = 0.5
+            repPassInput.disabled = true;
+            repPassInput.style.opacity = 0.5;
         }
-        updatePasswordStatus()
-    })
+        updatePasswordStatus();
+    });
 
     repPassInput.addEventListener('input', updatePasswordStatus);
 
     registrationForm.addEventListener('input', function () {
-        if (passInput.value && repPassInput.value && document.getElementById('user').value && passInput.value === repPassInput.value && !userExists) {
+        if (passInput.value && repPassInput.value && document.getElementById('user').value && passInput.value === repPassInput.value && !userExists && passInput.value.length >= 6) {
             regButton.style.display = 'block';
             regButton.classList.add('slide-in-left');
         } else {
             regButton.style.display = 'none';
-            regButton.classList.remove('slide-in-left')
+            regButton.classList.remove('slide-in-left');
         }
     });
 
     registrationForm.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        regButton.disabled = true;
+        regButton.style.cursor = 'default';
+
         if (passInput.value !== repPassInput.value) {
-            passStatus.textContent = "Пароли не совпадают";
-            passStatus.style.color = 'red';
-            regButton.style.display = "none"
-            regButton.classList.remove('slide-in-left')
+            showErrorMessage("Пароли не совпадают", errorMessage);
+            regButton.disabled = false;
+            regButton.style.cursor = 'pointer';
+        } else if (passInput.value.length < 6) {
+            showErrorMessage("Пароль слишком короткий (минимум 6 символов)", errorMessage);
+            regButton.disabled = false;
+            regButton.style.cursor = 'pointer';
         } else {
             fetch('/register', {
                     method: 'POST',
@@ -150,30 +165,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(response => {
                     if (response.ok) {
-                        //  window.location.href = '/signin';
+                        successMessage.style.display = "block"
+                        successMessage.innerHTML = `
+                                <div class="success-message">
+                                  <h2>Регистрация прошла успешно!</h2>
+                                  <p>
+                                    Через <span id="timer">3</span> секунды Вы будете автоматически
+                                    перенаправлены на страницу для прохождения авторизации
+                                    <a href="{{ url_for('signin') }}" class="auth-form button">Авторизация</a>
+                                  </p>
+                                </div>`;
+                        setTimeout(function () {
+                            window.location.href = '/signin';
+                        }, 3000);
+                        regButton.disabled = true;
+
                     } else {
                         response.text().then(text => {
-                            showErrorMessage(text, passStatus);
+                            showErrorMessage(text, errorMessage);
                         });
-                        return
+                        regButton.disabled = false;
+                        regButton.style.cursor = 'pointer';
+                        return;
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    alert('Произошла ошибка при отправке данных');
-                    return
+                    showErrorMessage('Произошла ошибка при отправке данных', errorMessage);
+                    regButton.disabled = false;
+                    regButton.style.cursor = 'pointer';
+                    return;
                 });
         }
     });
-    if (successMessage) {
-        setTimeout(function () {
-            window.location.href = '/signin';
-        }, 3000);
-    }
 });
 
 function showErrorMessage(message, element) {
-    element.textContent = message
+    element.textContent = message;
     element.style.color = 'red';
-    element.style.display = "block";
+    element.style.display = 'block';
 }

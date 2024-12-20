@@ -2,19 +2,8 @@
 content %}
 <h1>Register Form</h1>
 <div class="form-wrapper">
-  {% if registration_success %}
-  <div class="success-message">
-    <h2>Регистрация прошла успешно!</h2>
-    <p>
-      Через <span id="timer">3</span> секунды Вы будете автоматически
-      перенаправлены на страницу для прохождения авторизации
-      <a href="{{ url_for('signin') }}" class="auth-form button">Авторизация</a>
-    </p>
-  </div>
-  {% else %}
   <form id="signin" class="auth-form" method="post" autocomplete="off">
     <input type="text" id="user" name="user" placeholder="username" required />
-    <div id="pass_status" class="check_pass" style="display: none"></div>
     <div class="pass-input" style="display: none">
       <input
         type="password"
@@ -43,7 +32,8 @@ content %}
       ▶
     </button>
   </form>
-  {% endif %}
+  <div id="error-message"></div>
+  <div class="success-message" style="display: none"></div>
 </div>
 <script
   src="{{ url_for('static', filename='js/register__sign_up.js') }}"

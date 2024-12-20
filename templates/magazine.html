@@ -41,13 +41,13 @@ block content %}
           const productDiv = document.createElement("div");
           productDiv.classList.add("product");
           productDiv.innerHTML = `
-                                <img src="${product.image}" alt="${product.name}" class="imgl" />
-                                <h2>${product.name}</h2>
-                                <p>Цена: ${product.price} руб.</p>
-                                <button onclick="addToCart('${product.name}', ${product.price})" class = "magazine-button">
-                                    Добавить в корзину
-                                </button>
-                            `;
+            <img src="${product.image}" alt="${product.name}" class="imgl" />
+            <h2>${product.name}</h2>
+            <p>Цена: ${product.price} руб.</p>
+            <button onclick="addToCart('${product.name}', ${product.price})" class = "magazine-button">
+                Добавить в корзину
+            </button>
+                                `;
           container.appendChild(productDiv);
         });
       })

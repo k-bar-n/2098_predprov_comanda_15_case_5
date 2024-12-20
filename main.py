@@ -62,8 +62,6 @@ def register():
             data = request.get_json()
             username = data['user']
             password = data['pass']
-            if len(password) < 6:
-                return "Пароль слишком короткий (минимум 6 символов)", 400
             users = load_json('users.json')
             new_user = {
                 'id': get_next_id(users),
@@ -73,7 +71,7 @@ def register():
             }
             users.append(new_user)
             save_json('users.json', users)
-            return render_template('register__sign_up.html', registration_success=True)
+            return '', 200
         except Exception as e:
             print(e)
             return "Registration failed", 500

@@ -5,22 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f580404a-9264-4da0-a802-6404d55b2648" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/register__sign_up.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/sign_in.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inventory.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/inventory.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/users.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/autorization.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/registration.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/register__sign_up.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/registr.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/authorization__sign_in.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/authorization__sign_in.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/register__sign_up.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/register__sign_up.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/magazine.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/magazine.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/register__sign_up.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/register__sign_up.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/sign_in.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sign_in.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

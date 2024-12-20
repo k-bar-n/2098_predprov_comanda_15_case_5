@@ -3,6 +3,7 @@
 
 * {
     font-family: 'Open Sans', 'sans-serif', 'FontAwesome';
+    box-sizing: border-box;
 }
 
 body {
@@ -10,16 +11,14 @@ body {
     color: #fff;
     margin: 0;
     padding: 0;
-    font-size: 16px;
-    /* Global font size */
+    font-size: 20px;
 }
 
 h1 {
     color: rgb(255, 255, 255);
-    margin: 20px auto 0;
     text-align: center;
-    font-size: 2.2rem;
-    /* Larger h1 */
+    font-size: 3rem;
+    margin: 20px 0;
 }
 
 a {
@@ -33,66 +32,32 @@ a:hover {
 
 /* Общее для форм */
 .form-wrapper {
-    position: absolute;
-    width: 400px;
-    left: 50%;
-    margin-left: -200px;
-    top: 50%;
-    margin-top: -150px;
+    width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .auth-form {
-    height: 120px;
-    /* Increased form height */
     width: 100%;
-    border-radius: 10px;
-    position: relative;
-}
-
-.auth-form::before {
-    display: block;
-    position: relative;
-    height: 2px;
-    background: rgb(52, 56, 61);
-    content: '';
-    top: 58px;
-    margin-left: 20px;
-    z-index: 1;
-}
-
-.auth-form input:first-of-type {
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
-}
-
-.auth-form input:last-of-type {
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
 }
 
 .auth-form input[type="text"],
 .auth-form input[type="password"],
 .auth-form button[type="submit"] {
     background: rgb(36, 36, 37);
-    box-shadow: inset -100px -100px 0 rgb(36, 36, 37);
-    /*Prevent yellow autofill color*/
     color: rgb(52, 56, 61);
-}
-
-.auth-form input[type="text"],
-.auth-form input[type="password"] {
-    position: relative;
-    display: block;
-    width: calc(100% - 40px);
-    height: 50px;
     border: 0;
-    outline: 0;
-    top: -2px;
-    padding: 0 0 0 20px;
-    font-weight: 700;
-    font-size: 1rem;
-    /* Input font size */
+    padding: 15px;
     margin-bottom: 15px;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    outline: none;
 }
 
 .auth-form input[type="text"]:focus,
@@ -101,81 +66,74 @@ a:hover {
 }
 
 .auth-form button[type="submit"] {
-    display: block;
-    position: absolute;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 70px;
     color: rgb(36, 36, 37);
     border-radius: 50px;
-    outline: 0;
-    z-index: 2;
-    top: 28px;
-    right: -30px;
-    border: 6px solid rgb(36, 36, 37);
-    font-size: 25px;
-    text-indent: 0px;
-    padding-left: 11px;
-    padding-bottom: 3px;
+    border: 8px solid rgb(36, 36, 37);
+    font-size: 30px;
     text-align: center;
+    cursor: pointer;
+    margin-left: auto;
 }
 
 .auth-form button[type="submit"]:hover {
     color: rgb(0, 126, 165);
     text-shadow: 0 0 10px rgb(0, 126, 165);
-    cursor: pointer;
 }
 
 .auth-form.continue-button {
     display: block;
-    position: relative;
-    width: calc(100% - 40px);
-    height: 50px;
-    margin: 10px auto;
+    width: 100%;
+    height: 70px;
+    margin: 20px auto;
     background: rgb(36, 36, 37);
     color: rgb(52, 56, 61);
-    border-radius: 8px;
+    border-radius: 12px;
     border: none;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.4rem;
+    cursor: pointer;
 }
 
 .auth-form.continue-button:hover {
     color: rgb(0, 126, 165);
     text-shadow: 0 0 10px rgb(0, 126, 165);
-    cursor: pointer;
 }
 
 .auth-form p {
     color: rgb(79, 85, 97);
-    padding: 0 20px;
+    padding: 0 30px;
     font-weight: 700;
-    font-size: 14px;
-    margin: 5px 0 0 0;
+    font-size: 18px;
+    margin: 10px 0 0 0;
 }
 
-.error-message {
+#error-message {
     color: red;
     display: none;
-    margin-top: 25%;
-    size: 30 px;
-    position: relative;
+    font-size: 1.3rem;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    margin-top: 15px;
 }
 
 .success-message {
     color: rgb(79, 85, 97);
     text-align: center;
-    margin-top: 25%;
-    position: relative;
+    font-size: 1.5rem;
+    margin: 15px;
 }
 
 .check_pass {
     color: red;
     margin-top: 3px;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
     text-align: center;
+    display: none;
 }
-
 
 /* Стили для магазина */
 header {
@@ -207,7 +165,6 @@ nav button {
     border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
-    /* Button font size */
 }
 
 main {
@@ -287,29 +244,22 @@ main {
 }
 
 .magazine-button {
-    /* Specific style for magazine buttons */
     padding: 12px 40px;
     overflow: hidden;
     position: relative;
-    /* необходим для корректного позиционирования псевдоэлемента */
 }
 
 .magazine-button:before {
     font-family: FontAwesome;
     content: "\f07a";
-    /* Код значка */
     position: absolute;
     top: 13px;
-    /* Центрирование по вертикали */
     left: -35px;
-    /* Начальное положение (вне кнопки) */
     transition: all 200ms ease;
-    /* Плавный переход */
 }
 
 .magazine-button:hover:before {
     left: 7px;
-    /* Позиция значка при наведении */
 }
 
 .dashboard-container {
@@ -318,11 +268,11 @@ main {
     border: 1px solid #555;
     border-radius: 8px;
     text-align: center;
+    font-size: 1.5rem;
 }
 
 .slide-in-left {
     display: block !important;
-    /* Ensure display: block for animation */
     animation: slideInLeft 0.5s ease forwards;
 }
 
