@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% block title %}Register{% endblock %} {% block
+content %}
+<h1>Register Form</h1>
+<div class="form-wrapper">
+  {% if registration_success %}
+  <div class="success-message">
+    <h2>Регистрация прошла успешно!</h2>
+    <p>
+      Через <span id="timer">3</span> секунды Вы будете автоматически
+      перенаправлены на страницу для прохождения авторизации
+      <a href="{{ url_for('signin') }}" class="auth-form button">Авторизация</a>
+    </p>
+  </div>
+  {% else %}
+  <form id="signin" class="auth-form" method="post" autocomplete="off">
+    <input type="text" id="user" name="user" placeholder="username" required />
+    <div id="pass_status" class="check_pass" style="display: none"></div>
+    <div class="pass-input" style="display: none">
+      <input
+        type="password"
+        id="pass"
+        name="pass"
+        placeholder="password"
+        required
+      />
+    </div>
+    <div class="rep-pass-input" style="display: none">
+      <input
+        type="password"
+        id="rep_pass"
+        name="rep_pass"
+        placeholder="repeat password"
+        required
+      />
+    </div>
+
+    <button
+      type="submit"
+      id="RegButton"
+      style="display: none"
+      class="auth-form button"
+    >
+      ▶
+    </button>
+  </form>
+  {% endif %}
+</div>
+<script
+  src="{{ url_for('static', filename='js/register__sign_up.js') }}"
+  defer
+></script>
+{% endblock %}

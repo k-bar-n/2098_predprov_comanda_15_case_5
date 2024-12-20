@@ -2,136 +2,371 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css');
 
 * {
-	font-family: 'Open Sans', 'sans-serif', 'FontAwesome';
+    font-family: 'Open Sans', 'sans-serif', 'FontAwesome';
 }
 
 body {
-	background: rgb(52, 56, 61);
+    background: rgb(52, 56, 61);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    /* Global font size */
 }
 
 h1 {
-	color: rgb(255, 255, 255);
-	margin: 20px auto 0;
-	width: 200px;
-	text-align: center;
+    color: rgb(255, 255, 255);
+    margin: 20px auto 0;
+    text-align: center;
+    font-size: 2.2rem;
+    /* Larger h1 */
 }
 
-#wrapper {
-	position: absolute;
-	width: 320px;
-	left: 50%;
-	margin-left: -160px;
-	top: 50%;
-	margin-top: -75px;
+a {
+    text-decoration: none;
+    color: rgb(111, 119, 135);
 }
 
-/* === Sign in Form === */
-#signin {
-	height: 90px;
-	width: 300px;
-	border-radius: 8px;
-	position: relative;
+a:hover {
+    border-bottom: 1px solid;
 }
 
-#signin::before {
-	display: block;
-	position: relative;
-	height: 2px;
-	background: rgb(52, 56, 61);
-	content: '';
-	top: 44px;
-	margin-left: 20px;
-	z-index: 1;
+/* Общее для форм */
+.form-wrapper {
+    position: absolute;
+    width: 400px;
+    left: 50%;
+    margin-left: -200px;
+    top: 50%;
+    margin-top: -150px;
 }
 
-#signin input:first-of-type {
-	border-top-right-radius: 8px;
-	border-top-left-radius: 8px;
+.auth-form {
+    height: 120px;
+    /* Increased form height */
+    width: 100%;
+    border-radius: 10px;
+    position: relative;
 }
 
-#signin input:last-of-type {
-	border-bottom-right-radius: 8px;
-	border-bottom-left-radius: 8px;
+.auth-form::before {
+    display: block;
+    position: relative;
+    height: 2px;
+    background: rgb(52, 56, 61);
+    content: '';
+    top: 58px;
+    margin-left: 20px;
+    z-index: 1;
 }
 
-#signin input[type="text"],
-#signin input[type="password"],
-#signin button[type="submit"] {
-	background: rgb(28, 30, 33);
-	box-shadow: inset -100px -100px 0 rgb(28, 30, 33);
-	/*Prevent yellow autofill color*/
-	color: rgb(52, 56, 61);
+.auth-form input:first-of-type {
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
 }
 
-#signin input[type="text"],
-#signin input[type="password"] {
-	position: relative;
-	display: block;
-	width: 280px;
-	height: 45px;
-	border: 0;
-	outline: 0;
-	top: -2px;
-	padding: 0 0 0 20px;
-	font-weight: 700;
+.auth-form input:last-of-type {
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
-#signin input[type="text"]:focus,
-#signin input[type="password"]:focus {
-	color: rgb(255, 255, 255);
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form button[type="submit"] {
+    background: rgb(36, 36, 37);
+    box-shadow: inset -100px -100px 0 rgb(36, 36, 37);
+    /*Prevent yellow autofill color*/
+    color: rgb(52, 56, 61);
 }
 
-#signin button[type="submit"] {
-	display: block;
-	position: absolute;
-	width: 52px;
-	height: 52px;
-	color: rgb(52, 56, 61);
-	border-radius: 50px;
-	outline: 0;
-	z-index: 2;
-	top: 19px;
-	right: -24px;
-	border: 6px solid rgb(52, 56, 61);
-	font-size: 25px;
-	text-indent: 0px;
-	padding-left: 9px;
-	padding-bottom: 3px;
-	text-align: center;
+.auth-form input[type="text"],
+.auth-form input[type="password"] {
+    position: relative;
+    display: block;
+    width: calc(100% - 40px);
+    height: 50px;
+    border: 0;
+    outline: 0;
+    top: -2px;
+    padding: 0 0 0 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    /* Input font size */
+    margin-bottom: 15px;
 }
 
-#signin button[type="submit"]:hover {
-	color: rgb(0, 126, 165);
-	text-shadow: 0 0 10px rgb(0, 126, 165);
-	cursor: pointer;
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus {
+    color: rgb(255, 255, 255);
 }
 
-#signin p {
-	color: rgb(79, 85, 97);
-	padding: 0 20px;
-	font-weight: 700;
-	font-size: 12px;
-	margin: 5px 0 0 0;
+.auth-form button[type="submit"] {
+    display: block;
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    color: rgb(36, 36, 37);
+    border-radius: 50px;
+    outline: 0;
+    z-index: 2;
+    top: 28px;
+    right: -30px;
+    border: 6px solid rgb(36, 36, 37);
+    font-size: 25px;
+    text-indent: 0px;
+    padding-left: 11px;
+    padding-bottom: 3px;
+    text-align: center;
 }
 
-#signin p>a {
-	color: rgb(111, 119, 135);
-	text-decoration: none;
+.auth-form button[type="submit"]:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+    cursor: pointer;
 }
 
-#signin p>a:hover {
-	border-bottom: 1px solid;
+.auth-form.continue-button {
+    display: block;
+    position: relative;
+    width: calc(100% - 40px);
+    height: 50px;
+    margin: 10px auto;
+    background: rgb(36, 36, 37);
+    color: rgb(52, 56, 61);
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
 }
 
-#wrong_pass {
-	color: red;
-	display: none;
-	margin-top: 25%;
-	size: 30 px;
-	position: relative;
+.auth-form.continue-button:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+    cursor: pointer;
 }
 
-#checker {
-	color: red;
-	display: block;
+.auth-form p {
+    color: rgb(79, 85, 97);
+    padding: 0 20px;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 5px 0 0 0;
+}
+
+.error-message {
+    color: red;
+    display: none;
+    margin-top: 25%;
+    size: 30 px;
+    position: relative;
+}
+
+.success-message {
+    color: rgb(79, 85, 97);
+    text-align: center;
+    margin-top: 25%;
+    position: relative;
+}
+
+.check_pass {
+    color: red;
+    margin-top: 3px;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+
+/* Стили для магазина */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: rgb(61, 60, 60);
+}
+
+#searchInput {
+    margin: 10px 0;
+    padding: 8px;
+    width: calc(100% - 20px);
+    max-width: 300px;
+    border-radius: 12px;
+    background-color: rgb(155, 155, 155);
+    font-size: 1rem;
+}
+
+nav {
+    margin-left: auto;
+}
+
+nav button {
+    background-color: rgb(255, 255, 255);
+    color: rgb(43, 44, 46);
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    /* Button font size */
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 25px;
+}
+
+.product {
+    border: 3px;
+    margin: 15px;
+    padding: 15px;
+    width: 250px;
+    height: 400px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(46, 44, 44);
+    border-radius: 10px;
+}
+
+.product img {
+    max-width: 90%;
+    height: 200px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+.product h2,
+.product p {
+    margin: 12px 0;
+    font-size: 1.1rem;
+}
+
+.product button {
+    margin: 7px 0;
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    background-color: #535353;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.cart {
+    position: absolute;
+    top: 75px;
+    right: 30px;
+    width: 350px;
+    background-color: #5c5c5c;
+    border: 1px solid #ccc;
+    display: none;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.cart h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.cart ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.cart button {
+    margin-top: 10px;
+}
+
+.imgl {
+    border-radius: 10px;
+}
+
+.magazine-button {
+    /* Specific style for magazine buttons */
+    padding: 12px 40px;
+    overflow: hidden;
+    position: relative;
+    /* необходим для корректного позиционирования псевдоэлемента */
+}
+
+.magazine-button:before {
+    font-family: FontAwesome;
+    content: "\f07a";
+    /* Код значка */
+    position: absolute;
+    top: 13px;
+    /* Центрирование по вертикали */
+    left: -35px;
+    /* Начальное положение (вне кнопки) */
+    transition: all 200ms ease;
+    /* Плавный переход */
+}
+
+.magazine-button:hover:before {
+    left: 7px;
+    /* Позиция значка при наведении */
+}
+
+.dashboard-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.slide-in-left {
+    display: block !important;
+    /* Ensure display: block for animation */
+    animation: slideInLeft 0.5s ease forwards;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-in-down {
+    animation: slideInDown 0.5s ease forwards;
+    display: block !important;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.slide-out-up {
+    animation: slideOutUp 0.5s ease forwards;
+}
+
+@keyframes slideOutUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
 }

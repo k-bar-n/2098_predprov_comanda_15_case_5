@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block title %}Sign In{% endblock %} {% block
+content %}
+<h1>Sign In</h1>
+<div class="form-wrapper">
+  <form id="signin" class="auth-form" method="post" autocomplete="off">
+    <input type="text" id="user" name="user" placeholder="username" required />
+    <input
+      type="password"
+      id="pass"
+      name="pass"
+      placeholder="password"
+      required
+    />
+    <button type="submit" id="LogButton" class="auth-form button">▶</button>
+    <p>
+      Don't have an account?
+      <a href="{{ url_for('register') }}" class="auth-form button"
+        >click here</a
+      >
+    </p>
+  </form>
+</div>
+<script
+  src="{{ url_for('static', filename='js/authorization__sign_in.js') }}"
+  defer
+></script>
+{% endblock %}
