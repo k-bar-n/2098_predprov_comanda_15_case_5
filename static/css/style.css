@@ -1,8 +1,11 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css');
+/* шрифт на сайте */
+@font-face {
+    font-family: 'GOST_Type_A';
+    src: url('/static/fonts/GOST_Type_A.ttf') format('truetype');
+}
 
 * {
-    font-family: 'Open Sans', 'sans-serif', 'FontAwesome';
+    font-family: 'GOST_Type_A', sans-serif;
     box-sizing: border-box;
 }
 
@@ -32,7 +35,7 @@ a:hover {
 
 /* Общее для форм */
 .form-wrapper {
-    width: 600px;
+    width: 50vw;
     margin: 50px auto;
     padding: 20px;
     display: flex;
@@ -50,13 +53,14 @@ a:hover {
 .auth-form input[type="text"],
 .auth-form input[type="password"],
 .auth-form button[type="submit"] {
+    width: 100%;
     background: rgb(36, 36, 37);
     color: rgb(52, 56, 61);
     border: 0;
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 10px;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     outline: none;
 }
 
@@ -66,12 +70,15 @@ a:hover {
 }
 
 .auth-form button[type="submit"] {
-    width: 100px;
-    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 60px;
     color: rgb(36, 36, 37);
     border-radius: 50px;
     border: 8px solid rgb(36, 36, 37);
-    font-size: 30px;
+    /* font-size: 30px; */
     text-align: center;
     cursor: pointer;
     margin-left: auto;
@@ -83,7 +90,9 @@ a:hover {
 }
 
 .auth-form.continue-button {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 70px;
     margin: 20px auto;
@@ -117,6 +126,9 @@ a:hover {
     text-align: center;
     border-radius: 8px;
     margin-top: 15px;
+
+    justify-content: center;
+    align-items: center;
 }
 
 .success-message {
@@ -272,7 +284,7 @@ main {
 }
 
 .slide-in-left {
-    display: block !important;
+    display: flex !important;
     animation: slideInLeft 0.5s ease forwards;
 }
 
@@ -290,7 +302,7 @@ main {
 
 .slide-in-down {
     animation: slideInDown 0.5s ease forwards;
-    display: block !important;
+    display: flex !important;
 }
 
 @keyframes slideInDown {

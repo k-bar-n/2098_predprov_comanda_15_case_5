@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         errorMessage.textContent =
                             'Вы успешно авторизировались! Перенаправление через 2 секунды...';
                         errorMessage.style.color = 'green';
-                        errorMessage.style.display = 'block';
+                        errorMessage.style.display = 'flex';
                         setTimeout(function () {
                             window.location.href = '/dashboard';
                         }, 2000);
@@ -63,6 +63,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function showErrorMessage(message, element) {
         element.textContent = message;
         element.style.color = 'red';
-        element.style.display = 'block';
+        element.style.display = 'flex';
     }
 });

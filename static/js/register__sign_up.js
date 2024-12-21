@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     userInp.addEventListener('input', function () {
         if (userInp.value) {
-            continueButton.style.display = 'block';
+            continueButton.style.display = 'flex';
             errorMessage.style.display = 'none';
             regButton.style.display = "none"
             regButton.classList.remove('slide-in-left')
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     errorMessage.style.color = 'green';
                 }
             }
-            errorMessage.style.display = "block";
+            errorMessage.style.display = "flex";
         } else {
             errorMessage.style.display = "none";
             regButton.style.display = "none"
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     registrationForm.addEventListener('input', function () {
         if (passInput.value && repPassInput.value && document.getElementById('user').value && passInput.value === repPassInput.value && !userExists && passInput.value.length >= 6) {
-            regButton.style.display = 'block';
+            regButton.style.display = 'flex';
             regButton.classList.add('slide-in-left');
         } else {
             regButton.style.display = 'none';
@@ -165,19 +165,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(response => {
                     if (response.ok) {
-                        successMessage.style.display = "block"
+                        successMessage.style.display = "flex"
                         successMessage.innerHTML = `
                                 <div class="success-message">
                                   <h2>Регистрация прошла успешно!</h2>
                                   <p>
-                                    Через <span id="timer">3</span> секунды Вы будете автоматически
-                                    перенаправлены на страницу для прохождения авторизации
-                                    <a href="{{ url_for('signin') }}" class="auth-form button">Авторизация</a>
+                                    Через <span id="timer">2</span> секунды Вы будете автоматически
+                                    перенаправлены на страницу для прохождения <a href="{{ url_for('signin') }}"">авторизации</a>.
                                   </p>
                                 </div>`;
                         setTimeout(function () {
                             window.location.href = '/signin';
-                        }, 3000);
+                        }, 2000);
                         regButton.disabled = true;
 
                     } else {
@@ -203,5 +202,5 @@ document.addEventListener('DOMContentLoaded', function () {
 function showErrorMessage(message, element) {
     element.textContent = message;
     element.style.color = 'red';
-    element.style.display = 'block';
+    element.style.display = 'flex';
 }
