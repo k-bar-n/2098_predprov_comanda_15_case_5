@@ -20,20 +20,27 @@ document.addEventListener('DOMContentLoaded', function () {
     continueButton.style.display = 'none';
     regButton.disabled = false;
 
-
     userInp.addEventListener('input', function () {
         if (userInp.value) {
             continueButton.style.display = 'flex';
+            continueButton.classList.add('slide-in-down');
+            continueButton.classList.remove('slide-out-up');
             errorMessage.style.display = 'none';
             regButton.style.display = "none"
             regButton.classList.remove('slide-in-left')
+
         } else {
-            continueButton.style.display = 'none';
+            continueButton.classList.add('slide-out-up');
+            continueButton.classList.remove('slide-in-down');
+            setTimeout(() => {
+                continueButton.style.display = 'none';
+            }, 500);
             errorMessage.style.display = 'none';
             regButton.style.display = "none"
             regButton.classList.remove('slide-in-left')
         }
     });
+
 
     function checkUsernameAvailability(username) {
         return fetch('/check_username', {
@@ -82,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isAvailable) {
                 continueButton.classList.add('slide-out-up')
                 setTimeout(function () {
-                    continueButton.style.display = "none"
+                    continueButton.remove();
                     userInp.disabled = true;
                     passInput.parentNode.classList.add('slide-in-down')
                     repPassInput.parentNode.classList.add('slide-in-down')
