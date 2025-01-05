@@ -1,0 +1,70 @@
+{
+  "admin": [
+    {
+      "name": "inventory_management",
+      "subpages": [
+        {
+          "name": "inventory_add_edit",
+          "order": 1
+        },
+        {
+          "name": "all_inventory",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "inventory_assignment",
+      "subpages": [
+        {
+          "name": "inventory_assignment_create",
+          "order": 1
+        },
+        {
+          "name": "all_assignments",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "purchases_management",
+      "subpages": [
+        {
+          "name": "purchases_add_edit",
+          "order": 1
+        },
+        {
+          "name": "all_purchase_plans",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "reports",
+      "subpages": [
+        {
+          "name": "all_inventory",
+          "order": 1
+        },
+        {
+          "name": "all_assignments_and_purchases",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "requests",
+      "subpages": []
+    }
+  ],
+  "user": [
+    {
+      "name": "inventory",
+      "subpages": []
+    },
+    {
+      "name": "requests",
+      "subpages": []
+    }
+  ]
+}

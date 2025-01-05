@@ -3,12 +3,21 @@
         "id": 1,
         "username": "admin1",
         "password": "admin1",
-        "role": "admin"
+        "role": "admin",
+        "last_login": "2025-01-05 00:41:39"
     },
     {
         "id": 2,
         "username": "user1",
         "password": "user1",
-        "role": "admin"
+        "role": "user",
+        "last_login": "2025-01-05 00:27:34"
+    },
+    {
+        "id": 3,
+        "username": "k-bar-n",
+        "password": "123456",
+        "role": "admin",
+        "last_login": "2025-01-03 20:50:29"
     }
 ]

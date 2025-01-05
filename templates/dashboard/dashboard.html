@@ -1,0 +1,81 @@
+{% extends 'base.html' %} {% block title %}Dashboard{% endblock %} {% block
+content %}
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+  <div class="menu">
+    <!-- Меню навигации -->
+    <nav class="dashboard-nav">
+      {% for page in pages %}
+      <div class="dropdown">
+        <button
+          class="dashboard-button {% if menu == page.name %}active{% endif %}"
+          onclick="loadSubContent('{{page.name}}')"
+        >
+          {{page.name}}
+        </button>
+        {% if page.subpages %}
+        <div class="dropdown-content">
+          {% for subpage in page.subpages | sort(attribute='order') %}
+          <a
+            class="dashboard-subpage-button"
+            onclick="loadSubSubContent('{{page.name}}', '{{subpage.name}}')"
+            >{{ subpage.name }}</a
+          >
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </nav>
+  </div>
+  <script src="{{ url_for('static', filename='js/dashboard_menu.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/utils.js') }}"></script>
+  {% if session['role'] == 'admin' %}
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/inventory_management.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/inventory_assignment.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/purchases_management.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/reports.js') }}"></script>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/requests.js') }}"></script>
+
+  <div class="content">
+    <!-- Контент страницы -->
+  </div>
+  <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+<script>
+  function loadSubContent(menu) {
+    const buttons = document.querySelectorAll(".dashboard-button");
+    buttons.forEach((button) => button.classList.remove("active"));
+    const activeButton = document.querySelector(
+      `.dashboard-button[onclick="loadSubContent('${menu}')"]`
+    );
+    if (activeButton) {
+      activeButton.classList.add("active");
+    }
+
+    fetch("/dashboard?menu=" + menu)
+      .then((response) => response.text())
+      .then((html) => {
+        document.querySelector(".content").innerHTML = html
+          .split('<div class="content">')[1]
+          .split("</div>")[0];
+      });
+  }
+  function loadSubSubContent(menu, subpage) {
+    const buttons = document.querySelectorAll(".dashboard-button");
+    buttons.forEach((button) => button.classList.remove("active"));
+    const activeButton = document.querySelector(
+      `.dashboard-button[onclick="loadSubContent('${menu}')"]`
+    );
+    if (activeButton) {
+      activeButton.classList.add("active");
+    }
+    fetch(`/dashboard/load_page?menu=${menu}&subpage=${subpage}`)
+      .then((response) => response.text())
+      .then((html) => {
+        document.querySelector(".content").innerHTML = html;
+      });
+  }
+</script>
+{% endblock %}

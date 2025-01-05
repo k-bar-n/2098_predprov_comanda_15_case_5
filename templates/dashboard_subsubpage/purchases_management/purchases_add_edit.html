@@ -1,0 +1,27 @@
+<div class="add-edit-form">
+  <h3>Добавить/Изменить план закупки</h3>
+  <form id="add-edit-purchase-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity"
+      placeholder="Количество"
+      required
+    /><br />
+    <input type="number" name="price" placeholder="Цена" required /><br />
+    <input type="text" name="supplier" placeholder="Поставщик" required /><br />
+    <button class="button auth-form" type="submit">Сохранить</button>
+  </form>
+</div>
+<div id="error-message-purchases" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/purchases_add_edit.js') }}"></script>
