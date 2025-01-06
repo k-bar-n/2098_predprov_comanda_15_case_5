@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const allRequests = document.getElementById("all_requests");
+    const errorMessage = document.getElementById('error-message-requests');
 
     function loadAllRequests() {
         fetch('/dashboard/get_all_requests')
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Ошибка:', error);
                 showErrorMessage(
                     'Произошла ошибка при загрузке данных',
-                    document.getElementById('error-message-requests')
+                    errorMessage
                 );
             });
     }

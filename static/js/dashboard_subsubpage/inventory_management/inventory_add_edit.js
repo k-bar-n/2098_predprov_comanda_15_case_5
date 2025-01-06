@@ -46,13 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        ...jsonData,
-                        image_type: image_type
-                    }),
+                    body: formData,
                 })
                 .then(response => {
                     if (response.ok) {

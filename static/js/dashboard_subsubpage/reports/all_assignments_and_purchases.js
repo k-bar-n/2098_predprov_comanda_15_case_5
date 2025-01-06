@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const allAssignmentsReports = document.getElementById("all_assignments_reports");
     const allPurchasePlansReports = document.getElementById("all_purchase_plans_reports");
-
+    const errorMessage = document.getElementById('error-message-reports');
 
     function loadAllInventory() {
         fetch('/dashboard/get_all_inventory')
@@ -14,7 +14,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     allInventoryReports.appendChild(listItem);
                 });
             })
-            .catch((error) => console.error("Ошибка при загрузке отчета: ", error));
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
     }
 
     function loadAllAssignments() {
@@ -28,7 +34,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     allAssignmentsReports.appendChild(listItem);
                 });
             })
-            .catch((error) => console.error("Ошибка при загрузке отчета: ", error));
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
     }
 
     function loadAllPurchases() {
@@ -42,9 +54,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     allPurchasePlansReports.appendChild(listItem);
                 });
             })
-            .catch((error) => console.error("Ошибка при загрузке отчета: ", error));
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
     }
 
     loadAllAssignments();
     loadAllPurchases();
+    loadAllInventory();
 });

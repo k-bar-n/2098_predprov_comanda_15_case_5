@@ -30,52 +30,11 @@ content %}
   </div>
   <script src="{{ url_for('static', filename='js/dashboard_menu.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard_subpage/utils.js') }}"></script>
-  {% if session['role'] == 'admin' %}
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/inventory_management.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/inventory_assignment.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/purchases_management.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/reports.js') }}"></script>
-  {% endif %}
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/requests.js') }}"></script>
 
   <div class="content">
     <!-- Контент страницы -->
   </div>
   <a href="{{ url_for('logout') }}">Logout</a>
 </div>
-<script>
-  function loadSubContent(menu) {
-    const buttons = document.querySelectorAll(".dashboard-button");
-    buttons.forEach((button) => button.classList.remove("active"));
-    const activeButton = document.querySelector(
-      `.dashboard-button[onclick="loadSubContent('${menu}')"]`
-    );
-    if (activeButton) {
-      activeButton.classList.add("active");
-    }
-
-    fetch("/dashboard?menu=" + menu)
-      .then((response) => response.text())
-      .then((html) => {
-        document.querySelector(".content").innerHTML = html
-          .split('<div class="content">')[1]
-          .split("</div>")[0];
-      });
-  }
-  function loadSubSubContent(menu, subpage) {
-    const buttons = document.querySelectorAll(".dashboard-button");
-    buttons.forEach((button) => button.classList.remove("active"));
-    const activeButton = document.querySelector(
-      `.dashboard-button[onclick="loadSubContent('${menu}')"]`
-    );
-    if (activeButton) {
-      activeButton.classList.add("active");
-    }
-    fetch(`/dashboard/load_page?menu=${menu}&subpage=${subpage}`)
-      .then((response) => response.text())
-      .then((html) => {
-        document.querySelector(".content").innerHTML = html;
-      });
-  }
-</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const allAssignments = document.getElementById("all_assignments");
+    const errorMessage = document.getElementById('error-message-assignments');
 
     function loadAllAssignments() {
         fetch('/dashboard/get_all_assignments')
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Ошибка:', error);
                 showErrorMessage(
                     'Произошла ошибка при загрузке данных',
-                    document.getElementById('error-message-assignments')
+                    errorMessage
                 );
             });
     }

@@ -10,50 +10,10 @@ block content %}
       onkeyup="filterProducts()"
     />
   </div>
-  <nav>
-    <button id="cartButton" onclick="toggleCart()" class="magazine-button">
-      Корзина (0)
-    </button>
-  </nav>
 </header>
 <main id="productContainer">
   <!-- Продукты будут загружаться сюда -->
 </main>
-
-<aside id="cart" class="cart">
-  <h2>Корзина</h2>
-  <ul id="cartItems"></ul>
-  <button onclick="clearCart()" class="magazine-button">
-    Очистить корзину
-  </button>
-</aside>
-
 <script src="{{ url_for('static', filename='js/cart_and_filter.js') }}"></script>
-<script>
-  // Функция для загрузки и отображения товаров
-  function loadProducts() {
-    fetch("/get_inventory") // Запрос к Flask
-      .then((response) => response.json())
-      .then((data) => {
-        const container = document.getElementById("productContainer");
-        container.innerHTML = ""; // Очищаем контейнер
-        data.forEach((product) => {
-          const productDiv = document.createElement("div");
-          productDiv.classList.add("product");
-          productDiv.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="imgl" />
-            <h2>${product.name}</h2>
-            <p>Цена: ${product.price} руб.</p>
-            <button onclick="addToCart('${product.name}', ${product.price})" class = "magazine-button">
-                Добавить в корзину
-            </button>
-                                `;
-          container.appendChild(productDiv);
-        });
-      })
-      .catch((error) => console.error("Ошибка загрузки товаров:", error));
-  }
-
-  loadProducts(); // Загрузка товаров
-</script>
+<script src="{{ url_for('static', filename='js/magazine.js') }}"></script>
 {% endblock %}

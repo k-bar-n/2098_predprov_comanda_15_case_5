@@ -70,20 +70,20 @@
       - **Структура:** Массив JSON-объектов, где каждый объект представляет собой пользователя:
         ```json
         [
-            {
-                "id": 1,
-                "username": "admin1",
-                "password": "admin1",
-                "role": "admin",
-                "last_login": "2024-12-29 18:25:47"
-            },
-            {
-                "id": 2,
-                "username": "user1",
-                "password": "user1",
-                "role": "user",
-                "last_login": "2025-01-04 18:27:50"
-            }
+          {
+            "id": 1,
+            "username": "admin1",
+            "password": "admin1",
+            "role": "admin",
+            "last_login": "2024-12-29 18:25:47"
+          },
+          {
+            "id": 2,
+            "username": "user1",
+            "password": "user1",
+            "role": "user",
+            "last_login": "2025-01-04 18:27:50"
+          }
         ]
         ```
       - **Поля:**
@@ -99,16 +99,24 @@
       - **Структура:** Массив JSON-объектов, где каждый объект представляет собой предмет инвентаря:
         ```json
         [
-            {
-                "id": 1,
-                "name": "Спорт-обувь",
-                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdvFZoLvLfzrOp8UKsbjkDl3_dh4S6OHAScg&s",
-                "image_type": 2,
-                "quantity": 10,
-                "state": "новый",
-                "price": 2999
-            },
-            ...
+          {
+            "id": 1,
+            "name": "Спорт-обувь",
+            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdvFZoLvLfzrOp8UKsbjkDl3_dh4S6OHAScg&s",
+            "image_type": 2,
+            "quantity": 10,
+            "state": "новый",
+            "price": 2999
+          },
+          {
+            "id": 2,
+            "name": "Футболка",
+            "image": "2.jpeg",
+            "image_type": 1,
+            "quantity": 10,
+            "state": "новый",
+            "price": 999
+          }
         ]
         ```
       - **Поля:**
@@ -330,7 +338,6 @@
       - Подача заявок в `requests.json` (реализовано).
       - Отслеживание статуса заявок в `requests.json` (частично реализовано).
       - Создание заявок на ремонт/замену (дополнительно) в `requests.json` (реализовано).
-      - Реализована фильтрация и добавление товаров в корзину (частично реализовано).
       - Реализована система выбора типа изображения, и его вывод
     - Реализована система выбора состояния товара
     - **Использование Cookie:**
@@ -386,7 +393,7 @@
 - Разработаны функции для работы с JSON (созданы).
 - Разработана авторизация/регистрация (реализовано).
 - Разработаны шаблоны страниц и функционал (частично реализовано).
-- Отображение инвентаря на странице магазина и динамическая фильтрация (частично реализовано).
+- Отображение инвентаря на странице магазина и динамическая фильтрация (частично реализовано), система корзины убрана.
 - Реализована работа с Cookie.
 - Реализована работа с https
 - Реализовано полное отключение кэширования.
@@ -419,3 +426,97 @@
     - Подготовить инструкцию и развернуть приложение (планируется в будущем).
 
 Этот план отражает текущее состояние проекта и определяет следующие шаги для его завершения в соответствии с поставленными требованиями.
+
+--------
+
+Вот так сейчас выглядит дерево проекта:
+
+```
+..\2098_predprov_comanda_15_case_5\
+|---.gitignore
+|---cert.pem
+|---key.pem
+|---main.py
+|---README.md
+|---.git
+|---.idea
+|---.venv
+|---data
+|   |---inventory.json
+|   |---inventory_assignments.json
+|   |---purchase_plans.json
+|   |---requests.json
+|   |---users.json
+|   `---user_pages_settings.json
+|---resources
+|   `---Командный кейс №5 «Управление спортивным инвентарем».pdf
+|---static
+|   |---css
+|   |   `---style.css
+|   |---fonts
+|   |   |---COPYRIGHT.txt
+|   |   `---GOST_Type_A.ttf
+|   |---images
+|   |   |---10.jpeg
+|   |   |---2.jpeg
+|   |   |---5.jpeg
+|   |   |---7.jpeg
+|   |   |---8.jpeg
+|   |   |---9.jpeg
+|   |   `---no_image.png
+|   `---js
+|       |---authorization__sign_in.js
+|       |---cart_and_filter.js
+|       |---dashboard.js
+|       |---dashboard_menu.js
+|       |---magazine.js
+|       |---register__sign_up.js
+|       |---requests.js
+|       |---dashboard_subpage
+|       |   `---utils.js
+|       `---dashboard_subsubpage
+|           |---inventory_assignment
+|           |   |---all_assignments.js
+|           |   `---inventory_assignment_create.js
+|           |---inventory_management
+|           |   |---all_inventory.js
+|           |   `---inventory_add_edit.js
+|           |---purchases_management
+|           |   |---all_purchase_plans.js
+|           |   `---purchases_add_edit.js
+|           |---reports
+|           |   |---all_assignments_and_purchases.js
+|           |   `---all_inventory.js
+|           `---requests
+|               |---all_requests.js
+|               `---request_create.js
+`---templates
+    |---404.html
+    |---admin_error.html
+    |---base.html
+    |---magazine.html
+    |---register__sign_up.html
+    |---sign_in.html
+    |---user_error.html
+    |---dashboard
+    |   `---dashboard.html
+    |---dashboard_subpage
+    |   |---inventory_assignment.html
+    |   |---inventory_management.html
+    |   |---purchases_management.html
+    |   |---reports.html
+    |   `---requests.html
+    `---dashboard_subsubpage
+        |---inventory_assignment
+        |   |---all_assignments.html
+        |   `---inventory_assignment_create.html
+        |---inventory_management
+        |   |---all_inventory.html
+        |   `---inventory_add_edit.html
+        |---purchases_management
+        |   |---all_purchase_plans.html
+        |   `---purchases_add_edit.html
+        `---reports
+            |---all_assignments_and_purchases.html
+            `---all_inventory.html
+```

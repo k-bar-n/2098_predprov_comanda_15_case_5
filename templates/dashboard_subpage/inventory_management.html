@@ -1,14 +1,19 @@
 <h2>Управление инвентарем</h2>
 <div class="add-edit-form">
   <h3>Добавить новый предмет</h3>
-  <form id="add-inventory-form" method="post">
+  <form id="add-edit-inventory-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
     <input type="text" name="name" placeholder="Название" required /><br />
-    <select name="image_type" id="image_type_add" required>
+    <select name="image_type" id="image_type_edit" required>
       <option value="0">Без изображения</option>
       <option value="1">Изображение из папки</option>
       <option value="2">Изображение по ссылке</option></select
     ><br />
-    <div id="image-input-add"></div>
+    <div id="image-input-edit"></div>
     <input
       type="number"
       name="quantity"
@@ -21,33 +26,7 @@
       <option value="сломанный">Сломанный</option></select
     ><br />
     <input type="number" name="price" placeholder="Цена" required /><br />
-    <button class="button auth-form" type="submit">Добавить</button>
-  </form>
-</div>
-<div class="add-edit-form">
-  <h3>Изменить предмет</h3>
-  <form id="edit-inventory-form" method="post">
-    <input type="number" name="edit-id" placeholder="ID" required /><br />
-    <input type="text" name="edit-name" placeholder="Название" required /><br />
-    <select name="edit-image_type" id="image_type_edit" required>
-      <option value="0">Без изображения</option>
-      <option value="1">Изображение из папки</option>
-      <option value="2">Изображение по ссылке</option></select
-    ><br />
-    <div id="image-input-edit"></div>
-    <input
-      type="number"
-      name="edit-quantity"
-      placeholder="Количество"
-      required
-    /><br />
-    <select name="edit-state" required>
-      <option value="новый">Новый</option>
-      <option value="используемый">Используемый</option>
-      <option value="сломанный">Сломанный</option></select
-    ><br />
-    <input type="number" name="edit-price" placeholder="Цена" required /><br />
-    <button class="button auth-form" type="submit">Изменить</button>
+    <button class="button auth-form" type="submit">Сохранить</button>
   </form>
 </div>
 <div id="error-message-inventory" class="error-message"></div>
@@ -55,4 +34,5 @@
   <h3>Весь инвентарь</h3>
   <ul id="all_inventory"></ul>
 </div>
-<script src="{{ url_for('static', filename='js/dashboard_inventory.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/inventory_add_edit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/all_inventory.js') }}"></script>

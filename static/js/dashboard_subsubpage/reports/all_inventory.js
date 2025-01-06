@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const allInventoryReports = document.getElementById("all_inventory_reports");
+    const errorMessage = document.getElementById('error-message-reports');
 
     function loadAllInventory() {
         fetch('/dashboard/get_all_inventory')
@@ -12,7 +13,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     allInventoryReports.appendChild(listItem);
                 });
             })
-            .catch((error) => console.error("Ошибка при загрузке отчета: ", error));
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
     }
     loadAllInventory();
 });

@@ -47,6 +47,11 @@ def index():
     return redirect(url_for('signin'))
 
 
+@app.route('/magazine')
+def magazine():
+    return render_template('magazine.html')
+
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
@@ -73,7 +78,7 @@ def signin():
                     # Устанавливаем Cookie
                     response = make_response(redirect(url_for('dashboard')))
                     response.set_cookie(
-                        'session_username', username, httponly=True, secure=False, samesite='Lax')
+                        'session_username', username, httponly=True, secure=True, samesite='Lax')
                     return response
             return 'Неверные учетные данные', 401
         except Exception as e:
@@ -104,7 +109,7 @@ def register():
             # Устанавливаем Cookie
             response = make_response(redirect(url_for('dashboard')))
             response.set_cookie('session_username', username,
-                                httponly=True, secure=False, samesite='Lax')
+                                httponly=True, secure=True, samesite='Lax')
             return response
         except Exception as e:
             print(e)
@@ -148,6 +153,7 @@ def dashboard():
 def load_subpage():
     menu = request.args.get('menu')
     subpage = request.args.get('subpage')
+    print(f"Loading subpage: menu={menu}, subpage={subpage}")
     if menu == "inventory_management":
         if subpage == "inventory_add_edit":
             return render_template('dashboard_subsubpage/inventory_management/inventory_add_edit.html')

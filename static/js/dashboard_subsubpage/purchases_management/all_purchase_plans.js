@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const allPurchasePlans = document.getElementById("all_purchase_plans");
+    const errorMessage = document.getElementById('error-message-purchases');
 
     function loadAllPurchases() {
         fetch('/dashboard/get_all_purchases')
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Ошибка:', error);
                 showErrorMessage(
                     'Произошла ошибка при загрузке данных',
-                    document.getElementById('error-message-purchases')
+                    errorMessage
                 );
             });
     }

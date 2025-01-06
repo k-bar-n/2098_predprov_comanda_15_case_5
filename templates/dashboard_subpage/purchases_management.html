@@ -1,7 +1,12 @@
 <h2>Управление закупками</h2>
 <div class="add-edit-form">
-  <h3>Добавить план закупки</h3>
-  <form id="add-purchase-form" method="post">
+  <h3>Добавить/Изменить план закупки</h3>
+  <form id="add-edit-purchase-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
     <input
       type="number"
       name="inventory_id"
@@ -16,33 +21,7 @@
     /><br />
     <input type="number" name="price" placeholder="Цена" required /><br />
     <input type="text" name="supplier" placeholder="Поставщик" required /><br />
-    <button class="button auth-form" type="submit">Добавить</button>
-  </form>
-</div>
-<div class="add-edit-form">
-  <h3>Изменить план закупки</h3>
-  <form id="edit-purchase-form" method="post">
-    <input type="number" name="edit-id" placeholder="ID" required /><br />
-    <input
-      type="number"
-      name="edit-inventory_id"
-      placeholder="ID инвентаря"
-      required
-    /><br />
-    <input
-      type="number"
-      name="edit-quantity"
-      placeholder="Количество"
-      required
-    /><br />
-    <input type="number" name="edit-price" placeholder="Цена" required /><br />
-    <input
-      type="text"
-      name="edit-supplier"
-      placeholder="Поставщик"
-      required
-    /><br />
-    <button class="button auth-form" type="submit">Изменить</button>
+    <button class="button auth-form" type="submit">Сохранить</button>
   </form>
 </div>
 <div id="error-message-purchases" class="error-message"></div>
@@ -50,4 +29,5 @@
   <h3>Все планы закупок</h3>
   <ul id="all_purchase_plans"></ul>
 </div>
-<script src="{{ url_for('static', filename='js/dashboard_purchases.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/purchases_add_edit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/all_purchase_plans.js') }}"></script>

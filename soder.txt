@@ -1,0 +1,2912 @@
+../main.py
+```
+# -*- coding: utf-8 -*-
+from flask import Flask, render_template, request, redirect, url_for, session, Response, make_response
+from werkzeug.utils import secure_filename
+import os
+import datetime
+import json
+
+app = Flask(__name__)
+app.secret_key = 'gv4ds1nhjmlk8nj3bhg4skgo6j7dhbvigsn9jgnsv3jr'
+
+DATA_DIR = 'data'
+
+
+def load_json(filename):
+    filepath = os.path.join(DATA_DIR, filename)
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def save_json(filename, data):
+    filepath = os.path.join(DATA_DIR, filename)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+
+def get_next_id(data, key="id"):
+    if not data:
+        return 1
+    return max(item.get(key, 0) for item in data) + 1
+
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+
+@app.route('/', methods=['GET'])
+def index():
+    if 'session_username' in request.cookies:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('signin'))
+
+
+@app.route('/magazine')
+def magazine():
+    return render_template('magazine.html')
+
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            username = data['user']
+            password = data['pass']
+            users = load_json('users.json')
+
+            for user in users:
+                if user['username'] == username and user['password'] == password:
+                    session['username'] = username
+                    session['role'] = user['role']
+
+                    # Получаем текущее время
+                    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    # Обновляем last_login в users.json
+                    for user in users:
+                        if user['username'] == username:
+                            user['last_login'] = now
+                            break
+                    save_json('users.json', users)
+
+                    # Устанавливаем Cookie
+                    response = make_response(redirect(url_for('dashboard')))
+                    response.set_cookie(
+                        'session_username', username, httponly=True, secure=True, samesite='Lax')
+                    return response
+            return 'Неверные учетные данные', 401
+        except Exception as e:
+            print(e)
+            return 'Error parsing JSON', 400
+    return render_template('sign_in.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            username = data['user']
+            password = data['pass']
+            users = load_json('users.json')
+            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            new_user = {
+                'id': get_next_id(users),
+                'username': username,
+                'password': password,
+                'role': 'user',
+                "last_login": now
+            }
+            users.append(new_user)
+            save_json('users.json', users)
+
+            # Устанавливаем Cookie
+            response = make_response(redirect(url_for('dashboard')))
+            response.set_cookie('session_username', username,
+                                httponly=True, secure=True, samesite='Lax')
+            return response
+        except Exception as e:
+            print(e)
+            return "Registration failed", 500
+    return render_template('register__sign_up.html', registration_success=False)
+
+
+@app.route('/check_username', methods=['POST'])
+def check_username():
+    try:
+        data = request.get_json()
+        username = data['user']
+        users = load_json('users.json')
+        exists = any(user['username'] == username for user in users)
+        return json.dumps({'exists': exists})
+    except Exception as e:
+        print(e)
+        return "Error checking username", 500
+
+
+@app.route('/dashboard')
+def dashboard():
+    if 'session_username' in request.cookies:
+        session['username'] = request.cookies['session_username']
+        users = load_json('users.json')
+        for user in users:
+            if user['username'] == session['username']:
+                session['role'] = user['role']
+        menu = request.args.get('menu')
+        user_pages_settings = load_json('user_pages_settings.json')
+        pages = user_pages_settings.get(session['role'], [])
+
+        if session['role'] == 'user':
+            if menu not in ['requests', None]:
+                return redirect(url_for('dashboard'))
+        return render_template('dashboard/dashboard.html', menu=menu, pages=pages)
+    return redirect(url_for('signin'))
+
+
+@app.route('/dashboard/load_page')
+def load_subpage():
+    menu = request.args.get('menu')
+    subpage = request.args.get('subpage')
+    print(f"Loading subpage: menu={menu}, subpage={subpage}")
+    if menu == "inventory_management":
+        if subpage == "inventory_add_edit":
+            return render_template('dashboard_subsubpage/inventory_management/inventory_add_edit.html')
+        elif subpage == "all_inventory":
+            return render_template('dashboard_subsubpage/inventory_management/all_inventory.html')
+    elif menu == "inventory_assignment":
+        if subpage == "inventory_assignment_create":
+            return render_template('dashboard_subsubpage/inventory_assignment/inventory_assignment_create.html')
+        elif subpage == "all_assignments":
+            return render_template('dashboard_subsubpage/inventory_assignment/all_assignments.html')
+    elif menu == "purchases_management":
+        if subpage == "purchases_add_edit":
+            return render_template('dashboard_subsubpage/purchases_management/purchases_add_edit.html')
+        elif subpage == "all_purchase_plans":
+            return render_template('dashboard_subsubpage/purchases_management/all_purchase_plans.html')
+    elif menu == "reports":
+        if subpage == "all_inventory":
+            return render_template('dashboard_subsubpage/reports/all_inventory.html')
+        elif subpage == "all_assignments_and_purchases":
+            return render_template('dashboard_subsubpage/reports/all_assignments_and_purchases.html')
+    elif menu == "requests":
+        return render_template('dashboard_subpage/requests.html')
+    return "Страница не найдена", 404
+
+
+# Маршруты для inventory
+@app.route('/dashboard/inventory_add', methods=['POST'])
+def inventory_add():
+    try:
+        data = request.form
+        image_type = data['image_type']
+        image_file = None
+        if image_type == '1':
+            image_file = request.files.get('image')
+            if image_file:
+                file_extension = os.path.splitext(image_file.filename)[1]
+                image_filename = data['name'] + file_extension
+                image_path = os.path.join('static/images', image_filename)
+                image_file.save(image_path)
+                image = image_filename
+            else:
+                image = ""
+        else:
+            image = data.get('image', '')
+        inventory = load_json('inventory.json')
+        new_inventory = {
+            'id': get_next_id(inventory),
+            'name': data['name'],
+            'image': image,
+            'quantity': int(data['quantity']),
+            'state': data['state'],
+            'image_type': image_type,
+            'price': int(data['price']),
+        }
+        inventory.append(new_inventory)
+        save_json('inventory.json', inventory)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка добавления инвентаря", 500
+
+
+@app.route('/dashboard/inventory_edit', methods=['POST'])
+def inventory_edit():
+    try:
+        data = request.form
+        image_type = data['edit-image_type']
+        image_file = None
+        if image_type == '1':
+            image_file = request.files.get('image')
+            if image_file:
+                file_extension = os.path.splitext(image_file.filename)[1]
+                image_filename = data['edit-name'] + file_extension
+                image_path = os.path.join('static/images', image_filename)
+                image_file.save(image_path)
+                image = image_filename
+            else:
+                image = ""
+        else:
+            image = data.get('edit-image', '')
+        inventory = load_json('inventory.json')
+        edit_id = int(data['edit-id'])
+        for item in inventory:
+            if item['id'] == edit_id:
+                item['name'] = data['edit-name']
+                item['image'] = image
+                item['quantity'] = int(data['edit-quantity'])
+                item['state'] = data['edit-state']
+                item['image_type'] = image_type
+                item['price'] = int(data['edit-price'])
+                break
+        save_json('inventory.json', inventory)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка изменения инвентаря", 500
+
+
+@app.route('/dashboard/get_all_inventory')
+def get_all_inventory():
+    try:
+        inventory = load_json('inventory.json')
+        json_data = json.dumps(inventory, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading inventory", 500
+
+
+# Маршруты для assignments
+@app.route('/dashboard/assign_inventory', methods=['POST'])
+def assign_inventory():
+    try:
+        data = request.get_json()
+        assignments = load_json('inventory_assignments.json')
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        new_assignment = {
+            'id': get_next_id(assignments),
+            'user_id': int(data['user_id']),
+            'inventory_id': int(data['inventory_id']),
+            'quantity_assigned': int(data['quantity_assigned']),
+            'assignment_date': now
+        }
+        assignments.append(new_assignment)
+        save_json('inventory_assignments.json', assignments)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка назначения инвентаря", 500
+
+
+@app.route('/dashboard/get_all_assignments')
+def get_all_assignments():
+    try:
+        assignments = load_json('inventory_assignments.json')
+        json_data = json.dumps(assignments, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading assignments", 500
+
+
+# Маршруты для purchases
+@app.route('/dashboard/purchase_add', methods=['POST'])
+def purchase_add():
+    try:
+        data = request.get_json()
+        purchases = load_json('purchase_plans.json')
+        new_purchase = {
+            'id': get_next_id(purchases),
+            'inventory_id': int(data['inventory_id']),
+            'quantity': int(data['quantity']),
+            'price': int(data['price']),
+            'supplier': data['supplier']
+        }
+        purchases.append(new_purchase)
+        save_json('purchase_plans.json', purchases)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка добавления плана закупки", 500
+
+
+@app.route('/dashboard/purchase_edit', methods=['POST'])
+def purchase_edit():
+    try:
+        data = request.get_json()
+        purchases = load_json('purchase_plans.json')
+        edit_id = int(data['edit-id'])
+        for item in purchases:
+            if item['id'] == edit_id:
+                item['inventory_id'] = int(data['edit-inventory_id'])
+                item['quantity'] = int(data['edit-quantity'])
+                item['price'] = int(data['edit-price'])
+                item['supplier'] = data['edit-supplier']
+                break
+        save_json('purchase_plans.json', purchases)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка изменения плана закупки", 500
+
+
+@app.route('/dashboard/get_all_purchases')
+def get_all_purchases():
+    try:
+        purchases = load_json('purchase_plans.json')
+        json_data = json.dumps(purchases, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading purchases", 500
+
+
+# Маршруты для reports
+@app.route('/dashboard/get_all_inventory')
+def get_all_inventory_for_report():
+    try:
+        inventory = load_json('inventory.json')
+        json_data = json.dumps(inventory, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading inventory", 500
+
+
+@app.route('/dashboard/get_all_assignments')
+def get_all_assignments_for_report():
+    try:
+        assignments = load_json('inventory_assignments.json')
+        json_data = json.dumps(assignments, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading assignments", 500
+
+
+@app.route('/dashboard/get_all_purchases')
+def get_all_purchases_for_report():
+    try:
+        purchases = load_json('purchase_plans.json')
+        json_data = json.dumps(purchases, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading purchases", 500
+
+
+# Маршруты для requests
+@app.route('/dashboard/request_create', methods=['POST'])
+def request_create():
+    try:
+        data = request.get_json()
+        requests = load_json('requests.json')
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        new_request = {
+            'id': get_next_id(requests),
+            'user_id': get_user_id_from_username(session['username']),
+            'inventory_id': int(data['inventory_id']),
+            'quantity_requested': int(data['quantity_requested']),
+            'status': 'pending',
+            'request_type': data['request_type'],
+            'request_date': now,
+        }
+        requests.append(new_request)
+        save_json('requests.json', requests)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка создания запроса", 500
+
+
+@app.route('/dashboard/get_all_requests')
+def get_all_requests():
+    try:
+        requests = load_json('requests.json')
+        json_data = json.dumps(requests, ensure_ascii=False, indent=4)
+        return Response(json_data, mimetype='application/json; charset=utf-8')
+    except Exception as e:
+        print(e)
+        return "Error loading requests", 500
+
+
+def get_user_id_from_username(username):
+    users = load_json('users.json')
+    for user in users:
+        if user['username'] == username:
+            return user['id']
+    return None
+
+
+# Маршрут для завершения сессии
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('role', None)
+    resp = make_response(redirect(url_for('signin')))
+    resp.set_cookie('session_username', '', expires=0)
+    return resp
+
+
+# Маршруты для обработки ошибок
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if 'session_username' in session and session['role'] == 'admin':
+        return render_template('admin_error.html', error=str(e)), 500
+    else:
+        return render_template('user_error.html'), 500
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=443,
+            ssl_context=('cert.pem', 'key.pem'))
+
+```
+
+../data\inventory.json
+```
+[
+  {
+    "id": 1,
+    "name": "Спорт-обувь",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdvFZoLvLfzrOp8UKsbjkDl3_dh4S6OHAScg&s",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 2999
+  },
+  {
+    "id": 2,
+    "name": "Футболка",
+    "image": "2.jpeg",
+    "image_type": 1,
+    "quantity": 10,
+    "state": "новый",
+    "price": 999
+  },
+  {
+    "id": 3,
+    "name": "Футболка",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYb6P5RbBa2ukvmLi1QdNYWBSBaIQTGOmbKg&s",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 999
+  },
+  {
+    "id": 4,
+    "name": "Футболка",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXhZd1YfD0hPyiQcBb5jpgpHszknEi87ibpw&s",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 999
+  },
+  {
+    "id": 5,
+    "name": "подкрадули",
+    "image": "5.jpeg",
+    "image_type": 1,
+    "quantity": 10,
+    "state": "новый",
+    "price": 9999999
+  },
+  {
+    "id": 6,
+    "name": "Кроссовки",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcIyxteB4V5iMTf0y6rOkz04w7VsTaUmvdbA&s",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 11999
+  },
+  {
+    "id": 7,
+    "name": "Мяч(Б)",
+    "image": "7.jpeg",
+    "image_type": 1,
+    "quantity": 10,
+    "state": "новый",
+    "price": 6799
+  },
+  {
+    "id": 8,
+    "name": "Мяч(Б)",
+    "image": "8.jpeg",
+    "image_type": 1,
+    "quantity": 10,
+    "state": "новый",
+    "price": 7999
+  },
+  {
+    "id": 9,
+    "name": "джоггеры",
+    "image": "9.jpeg",
+    "image_type": 1,
+    "quantity": 10,
+    "state": "новый",
+    "price": 3999
+  },
+  {
+    "id": 10,
+    "name": "Брюки",
+    "image": "10.jpeg",
+    "image_type": 1,
+    "quantity": 10,
+    "state": "новый",
+    "price": 3099
+  },
+  {
+    "id": 11,
+    "name": "(М).спорт-куртка",
+    "image": "https://images2.zoodmall.uz/cdn-cgi/image/w=500,fit=contain,f=auto/https%3A%2F%2Fimg.joomcdn.net%2F6c932a377d1cb6ccd698dfa67ca135780ce57a89_original.jpeg",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 5699
+  },
+  {
+    "id": 12,
+    "name": "Мужская-куртка",
+    "image": "https://images2.zoodmall.uz/cdn-cgi/image/w=500,fit=contain,f=auto/https%3A%2F%2Fimg.joomcdn.net%2Fb1528e93ca190272b759da9caf512ea9f77c8868_original.jpeg",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 8999
+  },
+  {
+    "id": 13,
+    "name": "Пальто",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMeCVAnGrSb313DVvbmZbmE4NJSA81bnlMYg&s",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 7999
+  },
+  {
+    "id": 14,
+    "name": "Шарф",
+    "image": "https://imgcdn.zarina.ru/upload/images/44710/thumb/900_9999/4471015006_50_1.webp?t=1726484080",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 1899
+  },
+  {
+    "id": 15,
+    "name": "Спортивные-штаны",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPhJ4W3JZEt2XqynY1o0V5Xw8iR1v4rOMywQ&s",
+    "image_type": 2,
+    "quantity": 10,
+    "state": "новый",
+    "price": 1499
+  },
+  {
+    "id": 16,
+    "name": "-",
+    "image": "",
+    "image_type": 0,
+    "quantity": 0,
+    "state": "сломан",
+    "price": 0
+  }
+]
+
+```
+
+../data\inventory_assignments.json
+```
+[
+  {
+    "id": 1,
+    "user_id": 2,
+    "inventory_id": 1,
+    "quantity_assigned": 2,
+    "assignment_date": "2025-01-05"
+  },
+  {
+    "id": 2,
+    "user_id": 3,
+    "inventory_id": 3,
+    "quantity_assigned": 1,
+    "assignment_date": "2025-01-05"
+  },
+  {
+    "id": 3,
+    "user_id": 2,
+    "inventory_id": 5,
+    "quantity_assigned": 3,
+    "assignment_date": "2025-01-06"
+  },
+  {
+    "id": 4,
+    "user_id": 1,
+    "inventory_id": 2,
+    "quantity_assigned": 1,
+    "assignment_date": "2025-01-07"
+  },
+  {
+    "id": 5,
+    "user_id": 3,
+    "inventory_id": 4,
+    "quantity_assigned": 2,
+    "assignment_date": "2025-01-07"
+  },
+  {
+    "id": 6,
+    "user_id": 2,
+    "inventory_id": 6,
+    "quantity_assigned": 1,
+    "assignment_date": "2025-01-08"
+  },
+  {
+    "id": 7,
+    "user_id": 3,
+    "inventory_id": 7,
+    "quantity_assigned": 1,
+    "assignment_date": "2025-01-08"
+  },
+  {
+    "id": 8,
+    "user_id": 1,
+    "inventory_id": 8,
+    "quantity_assigned": 1,
+    "assignment_date": "2025-01-09"
+  },
+  {
+    "id": 9,
+    "user_id": 2,
+    "inventory_id": 9,
+    "quantity_assigned": 2,
+    "assignment_date": "2025-01-09"
+  },
+  {
+    "id": 10,
+    "user_id": 3,
+    "inventory_id": 10,
+    "quantity_assigned": 1,
+    "assignment_date": "2025-01-10"
+  }
+]
+
+```
+
+../data\purchase_plans.json
+```
+[
+  {
+    "id": 1,
+    "inventory_id": 1,
+    "quantity": 15,
+    "price": 3000,
+    "supplier": "Спортмастер"
+  },
+  {
+    "id": 2,
+    "inventory_id": 2,
+    "quantity": 20,
+    "price": 1000,
+    "supplier": "Декатлон"
+  },
+  {
+    "id": 3,
+    "inventory_id": 3,
+    "quantity": 10,
+    "price": 900,
+    "supplier": "Adidas"
+  },
+  {
+    "id": 4,
+    "inventory_id": 4,
+    "quantity": 10,
+    "price": 1000,
+    "supplier": "Nike"
+  },
+  {
+    "id": 5,
+    "inventory_id": 5,
+    "quantity": 5,
+    "price": 10000000,
+    "supplier": "Пума"
+  },
+  {
+    "id": 6,
+    "inventory_id": 6,
+    "quantity": 12,
+    "price": 12000,
+    "supplier": "Reebok"
+  },
+  {
+    "id": 7,
+    "inventory_id": 7,
+    "quantity": 10,
+    "price": 7000,
+    "supplier": "Umbro"
+  },
+  {
+    "id": 8,
+    "inventory_id": 8,
+    "quantity": 11,
+    "price": 8000,
+    "supplier": "New Balance"
+  },
+  {
+    "id": 9,
+    "inventory_id": 9,
+    "quantity": 22,
+    "price": 4000,
+    "supplier": "ASICS"
+  },
+  {
+    "id": 10,
+    "inventory_id": 10,
+    "quantity": 33,
+    "price": 3100,
+    "supplier": "Mizuno"
+  }
+]
+
+```
+
+../data\requests.json
+```
+[
+  {
+    "id": 1,
+    "user_id": 2,
+    "inventory_id": 1,
+    "quantity_requested": 1,
+    "status": "pending",
+    "request_type": "get",
+    "request_date": "2025-01-05"
+  },
+  {
+    "id": 2,
+    "user_id": 3,
+    "inventory_id": 3,
+    "quantity_requested": 2,
+    "status": "approved",
+    "request_type": "repair",
+    "request_date": "2025-01-05"
+  },
+  {
+    "id": 3,
+    "user_id": 2,
+    "inventory_id": 5,
+    "quantity_requested": 1,
+    "status": "pending",
+    "request_type": "replace",
+    "request_date": "2025-01-06"
+  },
+  {
+    "id": 4,
+    "user_id": 1,
+    "inventory_id": 2,
+    "quantity_requested": 3,
+    "status": "approved",
+    "request_type": "get",
+    "request_date": "2025-01-06"
+  },
+  {
+    "id": 5,
+    "user_id": 3,
+    "inventory_id": 4,
+    "quantity_requested": 1,
+    "status": "rejected",
+    "request_type": "repair",
+    "request_date": "2025-01-07"
+  },
+  {
+    "id": 6,
+    "user_id": 2,
+    "inventory_id": 6,
+    "quantity_requested": 2,
+    "status": "pending",
+    "request_type": "get",
+    "request_date": "2025-01-07"
+  },
+  {
+    "id": 7,
+    "user_id": 3,
+    "inventory_id": 7,
+    "quantity_requested": 1,
+    "status": "approved",
+    "request_type": "replace",
+    "request_date": "2025-01-08"
+  },
+  {
+    "id": 8,
+    "user_id": 1,
+    "inventory_id": 8,
+    "quantity_requested": 2,
+    "status": "rejected",
+    "request_type": "repair",
+    "request_date": "2025-01-08"
+  },
+  {
+    "id": 9,
+    "user_id": 2,
+    "inventory_id": 9,
+    "quantity_requested": 1,
+    "status": "pending",
+    "request_type": "get",
+    "request_date": "2025-01-09"
+  },
+  {
+    "id": 10,
+    "user_id": 3,
+    "inventory_id": 10,
+    "quantity_requested": 1,
+    "status": "approved",
+    "request_type": "replace",
+    "request_date": "2025-01-09"
+  }
+]
+
+```
+
+../data\users.json
+```
+[
+    {
+        "id": 1,
+        "username": "admin1",
+        "password": "admin1",
+        "role": "admin",
+        "last_login": "2025-01-06 15:27:37"
+    },
+    {
+        "id": 2,
+        "username": "user1",
+        "password": "user1",
+        "role": "user",
+        "last_login": "2025-01-05 00:27:34"
+    },
+    {
+        "id": 3,
+        "username": "k-bar-n",
+        "password": "123456",
+        "role": "admin",
+        "last_login": "2025-01-03 20:50:29"
+    }
+]
+```
+
+../data\user_pages_settings.json
+```
+{
+  "admin": [
+    {
+      "name": "inventory_management",
+      "subpages": [
+        {
+          "name": "inventory_add_edit",
+          "order": 1
+        },
+        {
+          "name": "all_inventory",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "inventory_assignment",
+      "subpages": [
+        {
+          "name": "inventory_assignment_create",
+          "order": 1
+        },
+        {
+          "name": "all_assignments",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "purchases_management",
+      "subpages": [
+        {
+          "name": "purchases_add_edit",
+          "order": 1
+        },
+        {
+          "name": "all_purchase_plans",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "reports",
+      "subpages": [
+        {
+          "name": "all_inventory",
+          "order": 1
+        },
+        {
+          "name": "all_assignments_and_purchases",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "name": "requests",
+      "subpages": []
+    }
+  ],
+  "user": [
+    {
+      "name": "inventory",
+      "subpages": []
+    },
+    {
+      "name": "requests",
+      "subpages": []
+    }
+  ]
+}
+
+```
+
+../static\css\style.css
+```
+/* шрифт на сайте */
+@font-face {
+    font-family: 'GOST_Type_A';
+    src: url('/static/fonts/GOST_Type_A.ttf') format('truetype');
+}
+
+* {
+    font-family: 'GOST_Type_A', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: rgb(52, 56, 61);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+}
+
+h1 {
+    color: rgb(255, 255, 255);
+    text-align: center;
+    font-size: 3rem;
+    margin: 20px 0;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(111, 119, 135);
+}
+
+a:hover {
+    border-bottom: 1px solid;
+}
+
+/* Общее для форм */
+.form-wrapper {
+    width: 50vw;
+    margin: 50px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form button[type="submit"] {
+    width: 100%;
+    background: rgb(36, 36, 37);
+    color: rgb(52, 56, 61);
+    border: 0;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    outline: none;
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus {
+    color: rgb(255, 255, 255);
+}
+
+.auth-form button[type="submit"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 60px;
+    color: rgb(36, 36, 37);
+    border-radius: 50px;
+    border: 8px solid rgb(36, 36, 37);
+    /* font-size: 30px; */
+    text-align: center;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.auth-form button[type="submit"]:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+}
+
+.auth-form.continue-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 70px;
+    margin: 20px auto;
+    background: rgb(36, 36, 37);
+    color: rgb(52, 56, 61);
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.auth-form.continue-button:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+}
+
+.auth-form p {
+    color: rgb(79, 85, 97);
+    padding: 0 30px;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 10px 0 0 0;
+}
+
+#error-message {
+    color: red;
+    display: none;
+    font-size: 1.3rem;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    margin-top: 15px;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.success-message {
+    color: rgb(79, 85, 97);
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 15px;
+}
+
+.check_pass {
+    color: red;
+    margin-top: 3px;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    display: none;
+}
+
+/* Стили для магазина */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: rgb(61, 60, 60);
+}
+
+#searchInput {
+    margin: 10px 0;
+    padding: 8px;
+    width: calc(100% - 20px);
+    max-width: 300px;
+    border-radius: 12px;
+    background-color: rgb(155, 155, 155);
+    font-size: 1rem;
+}
+
+nav {
+    margin-left: auto;
+}
+
+nav button {
+    background-color: rgb(255, 255, 255);
+    color: rgb(43, 44, 46);
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 25px;
+}
+
+.product {
+    border: 3px;
+    margin: 15px;
+    padding: 15px;
+    width: 250px;
+    height: 500px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(46, 44, 44);
+    border-radius: 10px;
+}
+
+.product img {
+    max-width: 90%;
+    height: 200px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+.product h2,
+.product p {
+    margin: 12px 0;
+    font-size: 1.1rem;
+}
+
+.product button {
+    margin: 7px 0;
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    background-color: #535353;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.cart {
+    position: absolute;
+    top: 75px;
+    right: 30px;
+    width: 350px;
+    background-color: #5c5c5c;
+    border: 1px solid #ccc;
+    display: none;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.cart h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.cart ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.cart button {
+    margin-top: 10px;
+}
+
+.imgl {
+    border-radius: 10px;
+}
+
+.magazine-button {
+    padding: 12px 40px;
+    overflow: hidden;
+    position: relative;
+}
+
+.magazine-button:before {
+    font-family: FontAwesome;
+    content: "\f07a";
+    position: absolute;
+    top: 13px;
+    left: -35px;
+    transition: all 200ms ease;
+}
+
+.magazine-button:hover:before {
+    left: 7px;
+}
+
+.dashboard-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.slide-in-left {
+    display: flex !important;
+    animation: slideInLeft 0.5s ease forwards;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-in-down {
+    animation: slideInDown 0.5s ease forwards;
+    display: flex !important;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.slide-out-up {
+    animation: slideOutUp 0.5s ease forwards;
+}
+
+@keyframes slideOutUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+/* Стили для горизонтального меню dashboard */
+.dashboard-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard-button {
+    background-color: #535353;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-button:hover {
+    background-color: #6c6c6c;
+}
+
+.dashboard-button.active {
+    background-color: #333;
+}
+
+/* Стили для для форм и блоков dashboard */
+.add-edit-form {
+    width: 45vw;
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    background-color: rgb(46, 44, 44);
+}
+
+.add-edit-form input[type="text"],
+.add-edit-form input[type="number"],
+.add-edit-form select {
+    width: 100%;
+    background: rgb(36, 36, 37);
+    color: rgb(52, 56, 61);
+    border: 0;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    outline: none;
+}
+
+.all_inventory_container,
+.all_assignments_container,
+.all_purchase_plans_container,
+.reports_container,
+.all_requests_container {
+    width: 90vw;
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    background-color: rgb(46, 44, 44);
+}
+
+.all_inventory_container ul li,
+.all_assignments_container ul li,
+.all_purchase_plans_container ul li,
+.reports_container ul li,
+.all_requests_container ul li {
+    text-align: start;
+    margin: 10px 0;
+    font-size: 1.1rem;
+}
+
+/* Стили, для отображения выпадающего меню */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #535353;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #6c6c6c;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+```
+
+../static\fonts\COPYRIGHT.txt
+```
+Copyright © 1996-2009. ASCON Ltd. All Rights Reserved. 
+```
+
+../static\fonts\GOST_Type_A.ttf
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0x80 in position 7: invalid start byte
+```
+
+../static\images\10.jpeg
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+```
+
+../static\images\2.jpeg
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+```
+
+../static\images\5.jpeg
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+```
+
+../static\images\7.jpeg
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+```
+
+../static\images\8.jpeg
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+```
+
+../static\images\9.jpeg
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
+```
+
+../static\images\no_image.png
+```
+```
+Error reading file: 'utf-8' codec can't decode byte 0x89 in position 0: invalid start byte
+```
+
+../static\js\authorization__sign_in.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const signinForm = document.getElementById('signin');
+    const errorMessage = document.getElementById('error-message');
+    const logButton = document.getElementById('LogButton');
+    const usernameInput = document.getElementById('user');
+    const passwordInput = document.getElementById('pass');
+
+    function clearErrorMessage() {
+        errorMessage.textContent = '';
+        errorMessage.style.display = 'none';
+    }
+    usernameInput.addEventListener('input', clearErrorMessage);
+    passwordInput.addEventListener('input', clearErrorMessage);
+
+    if (signinForm) {
+        signinForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            logButton.disabled = true;
+            logButton.style.cursor = 'default';
+
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            fetch('/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user: username,
+                        pass: password,
+                    }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        errorMessage.textContent =
+                            'Вы успешно авторизировались! Перенаправление через 2 секунды...';
+                        errorMessage.style.color = 'green';
+                        errorMessage.style.display = 'flex';
+                        setTimeout(function () {
+                            window.location.href = '/dashboard';
+                        }, 2000);
+                    } else {
+                        response.text().then(text => {
+                            showErrorMessage(text, errorMessage);
+                        });
+                        logButton.disabled = false;
+                        logButton.style.cursor = 'pointer';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showErrorMessage(
+                        'Произошла ошибка при отправке данных',
+                        errorMessage
+                    );
+                    logButton.disabled = false;
+                    logButton.style.cursor = 'pointer';
+                });
+        });
+    }
+
+    function showErrorMessage(message, element) {
+        element.textContent = message;
+        element.style.color = 'red';
+        element.style.display = 'flex';
+    }
+});
+```
+
+../static\js\cart_and_filter.js
+```
+let cartItems = [];
+
+function addToCart(name, price) {
+    cartItems.push({
+        name,
+        price
+    });
+    updateCart();
+}
+
+function updateCart() {
+    const cartItemsList = document.getElementById('cartItems');
+    const cartButton = document.getElementById('cartButton');
+    cartItemsList.innerHTML = '';
+    let cartTotal = 0;
+
+    cartItems.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${item.name} - ${item.price} руб.`;
+        cartItemsList.appendChild(listItem);
+        cartTotal += item.price;
+    });
+
+    cartButton.textContent = `Корзина (${cartItems.length})`;
+    cartTotal.textContent = cartTotal;
+}
+
+function toggleCart() {
+    const cart = document.getElementById('cart');
+    cart.style.display = cart.style.display === 'none' ? 'block' : 'none';
+}
+
+function clearCart() {
+    cartItems = [];
+    updateCart();
+}
+
+function filterProducts() {
+    const searchInput = document.getElementById('searchInput');
+    const searchTerm = searchInput.value.toLowerCase();
+    const products = document.querySelectorAll('.product');
+
+    products.forEach(product => {
+        const productName = product.querySelector('h2').textContent.toLowerCase();
+        if (productName.includes(searchTerm)) {
+            product.style.display = 'flex';
+        } else {
+            product.style.display = 'none';
+        }
+    });
+}
+```
+
+../static\js\dashboard.js
+```
+function loadSubContent(menu) {
+    const buttons = document.querySelectorAll(".dashboard-button");
+    buttons.forEach((button) => button.classList.remove("active"));
+    const activeButton = document.querySelector(
+        `.dashboard-button[onclick="loadSubContent('${menu}')"]`
+    );
+    if (activeButton) {
+        activeButton.classList.add("active");
+    }
+
+    fetch("/dashboard?menu=" + menu)
+        .then((response) => response.text())
+        .then((html) => {
+            document.querySelector(".content").innerHTML = html
+                .split('<div class="content">')[1]
+                .split("</div>")[0];
+        });
+}
+
+function loadSubSubContent(menu, subpage) {
+    const buttons = document.querySelectorAll(".dashboard-button");
+    buttons.forEach((button) => button.classList.remove("active"));
+    const activeButton = document.querySelector(
+        `.dashboard-button[onclick="loadSubContent('${menu}')"]`
+    );
+    if (activeButton) {
+        activeButton.classList.add("active");
+    }
+    fetch(`/dashboard/load_page?menu=${menu}&subpage=${subpage}`)
+        .then((response) => response.text())
+        .then((html) => {
+            document.querySelector(".content").innerHTML = html;
+        });
+}
+```
+
+../static\js\dashboard_menu.js
+```
+function loadContent(menu) {
+    const buttons = document.querySelectorAll('.dashboard-button');
+    buttons.forEach(button => button.classList.remove('active'));
+    const activeButton = document.querySelector(`.dashboard-button[onclick="loadContent('${menu}')"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+    window.location.href = `/dashboard?menu=${menu}`;
+}
+```
+
+../static\js\magazine.js
+```
+function loadProducts() {
+    fetch("/dashboard/get_all_inventory")
+        .then((response) => response.json())
+        .then((data) => {
+            const container = document.getElementById("productContainer");
+            container.innerHTML = ""; // Очищаем контейнер
+            data.forEach((product) => {
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("product");
+                let image_element = "";
+                if (product.image_type == "0") {
+                    image_element =
+                        '<img src="/static/images/no_image.png" alt="No Image" class="imgl" />';
+                } else if (product.image_type == "1") {
+                    image_element = `<img src="/static/images/${product.image}" alt="${product.name}" class="imgl" />`;
+                } else if (product.image_type == "2") {
+                    image_element = `<img src="${product.image}" alt="${product.name}" class="imgl" />`;
+                }
+                productDiv.innerHTML = `
+                      ${image_element}
+                      <h2>${product.name}</h2>
+                      <p>ID: ${product.id}</p>
+                      <p>Цена: ${product.price} руб.</p>
+                      <p>Количество: ${product.quantity}</p>
+                      <p>Состояние: ${product.state}</p>
+                      <p>Тип изображения: ${product.image_type}</p>
+                                  `;
+                container.appendChild(productDiv);
+            });
+        })
+        .catch((error) => console.error("Ошибка загрузки товаров:", error));
+}
+
+loadProducts();
+```
+
+../static\js\register__sign_up.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const registrationForm = document.querySelector('#signin');
+    const regButton = document.getElementById('RegButton');
+    const userInp = document.getElementById('user');
+    const passInput = document.getElementById('pass');
+    const repPassInput = document.getElementById('rep_pass');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.querySelector('.success-message');
+    const continueButton = document.createElement('button');
+
+    continueButton.textContent = 'Продолжить';
+    continueButton.classList.add('auth-form');
+    continueButton.classList.add('continue-button');
+    userInp.parentNode.insertBefore(continueButton, userInp.nextSibling);
+    let userExists = false;
+    repPassInput.disabled = true;
+    repPassInput.style.opacity = 0.5;
+    passInput.disabled = true;
+    passInput.style.opacity = 0.5;
+    continueButton.style.display = 'none';
+    regButton.disabled = false;
+
+    userInp.addEventListener('input', function () {
+        if (userInp.value) {
+            continueButton.style.display = 'flex';
+            continueButton.classList.add('slide-in-down');
+            continueButton.classList.remove('slide-out-up');
+            errorMessage.style.display = 'none';
+            regButton.style.display = "none"
+            regButton.classList.remove('slide-in-left')
+
+        } else {
+            continueButton.classList.add('slide-out-up');
+            continueButton.classList.remove('slide-in-down');
+            setTimeout(() => {
+                continueButton.style.display = 'none';
+            }, 500);
+            errorMessage.style.display = 'none';
+            regButton.style.display = "none"
+            regButton.classList.remove('slide-in-left')
+        }
+    });
+
+
+    function checkUsernameAvailability(username) {
+        return fetch('/check_username', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user: username,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                userExists = data.exists;
+                if (userExists) {
+                    passInput.disabled = true;
+                    repPassInput.disabled = true;
+                    passInput.style.opacity = 0.5;
+                    repPassInput.style.opacity = 0.5;
+                    showErrorMessage(
+                        "Пользователь с таким именем уже существует",
+                        errorMessage
+                    );
+                    regButton.style.display = 'none';
+                    regButton.classList.remove('slide-in-left')
+                } else {
+                    passInput.disabled = false;
+                    passInput.style.opacity = 1;
+                    if (passInput.value) {
+                        repPassInput.disabled = false;
+                        repPassInput.style.opacity = 1;
+                    }
+                    errorMessage.style.display = "none"
+                }
+                return !userExists;
+            })
+            .catch(error => {
+                console.error('Ошибка проверки имени пользователя:', error);
+                return false
+            });
+    }
+
+    continueButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        checkUsernameAvailability(userInp.value).then(isAvailable => {
+            if (isAvailable) {
+                continueButton.classList.add('slide-out-up')
+                setTimeout(function () {
+                    continueButton.remove();
+                    userInp.disabled = true;
+                    passInput.parentNode.classList.add('slide-in-down')
+                    repPassInput.parentNode.classList.add('slide-in-down')
+                }, 500)
+            }
+        });
+    });
+
+    function updatePasswordStatus() {
+        if (repPassInput.value && passInput.value) {
+            if (passInput.value !== repPassInput.value) {
+                showErrorMessage("Пароли не совпадают", errorMessage);
+                regButton.style.display = "none"
+                regButton.classList.remove('slide-in-left')
+            } else {
+                if (passInput.value.length < 6) {
+                    showErrorMessage("Пароль слишком короткий (минимум 6 символов)", errorMessage);
+                    regButton.style.display = "none"
+                    regButton.classList.remove('slide-in-left')
+                } else {
+                    errorMessage.textContent = "Пароли совпадают";
+                    errorMessage.style.color = 'green';
+                }
+            }
+            errorMessage.style.display = "flex";
+        } else {
+            errorMessage.style.display = "none";
+            regButton.style.display = "none"
+            regButton.classList.remove('slide-in-left')
+        }
+    }
+
+    passInput.addEventListener('input', function () {
+        if (passInput.value && !userExists) {
+            repPassInput.disabled = false;
+            repPassInput.style.opacity = 1;
+        } else {
+            repPassInput.disabled = true;
+            repPassInput.style.opacity = 0.5;
+        }
+        updatePasswordStatus();
+    });
+
+    repPassInput.addEventListener('input', updatePasswordStatus);
+
+    registrationForm.addEventListener('input', function () {
+        if (passInput.value && repPassInput.value && document.getElementById('user').value && passInput.value === repPassInput.value && !userExists && passInput.value.length >= 6) {
+            regButton.style.display = 'flex';
+            regButton.classList.add('slide-in-left');
+        } else {
+            regButton.style.display = 'none';
+            regButton.classList.remove('slide-in-left');
+        }
+    });
+
+    registrationForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        regButton.disabled = true;
+        regButton.style.cursor = 'default';
+
+        if (passInput.value !== repPassInput.value) {
+            showErrorMessage("Пароли не совпадают", errorMessage);
+            regButton.disabled = false;
+            regButton.style.cursor = 'pointer';
+        } else if (passInput.value.length < 6) {
+            showErrorMessage("Пароль слишком короткий (минимум 6 символов)", errorMessage);
+            regButton.disabled = false;
+            regButton.style.cursor = 'pointer';
+        } else {
+            fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user: userInp.value,
+                        pass: passInput.value,
+                    }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        successMessage.style.display = "flex"
+                        successMessage.innerHTML = `
+                                <div class="success-message">
+                                  <h2>Регистрация прошла успешно!</h2>
+                                  <p>
+                                    Через <span id="timer">2</span> секунды Вы будете автоматически
+                                    перенаправлены на страницу для прохождения <a href="{{ url_for('signin') }}"">авторизации</a>.
+                                  </p>
+                                </div>`;
+                        setTimeout(function () {
+                            window.location.href = '/signin';
+                        }, 2000);
+                        regButton.disabled = true;
+
+                    } else {
+                        response.text().then(text => {
+                            showErrorMessage(text, errorMessage);
+                        });
+                        regButton.disabled = false;
+                        regButton.style.cursor = 'pointer';
+                        return;
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showErrorMessage('Произошла ошибка при отправке данных', errorMessage);
+                    regButton.disabled = false;
+                    regButton.style.cursor = 'pointer';
+                    return;
+                });
+        }
+    });
+});
+
+function showErrorMessage(message, element) {
+    element.textContent = message;
+    element.style.color = 'red';
+    element.style.display = 'flex';
+}
+```
+
+../static\js\requests.js
+```
+function loadProducts() {
+    fetch("/dashboard/get_all_inventory") // Запрос к Flask
+        .then((response) => response.json())
+        .then((data) => {
+            const container = document.getElementById("productContainer");
+            container.innerHTML = ""; // Очищаем контейнер
+            data.forEach((product) => {
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("product");
+                let image_element = "";
+                if (product.image_type == "0") {
+                    image_element =
+                        '<img src="/static/images/no_image.png" alt="No Image" class="imgl" />';
+                } else if (product.image_type == "1") {
+                    image_element = `<img src="/static/images/${product.image}" alt="${product.name}" class="imgl" />`;
+                } else if (product.image_type == "2") {
+                    image_element = `<img src="${product.image}" alt="${product.name}" class="imgl" />`;
+                }
+                productDiv.innerHTML = `
+                        ${image_element}
+                     <h2>${product.name}</h2>
+                     <p>Цена: ${product.price} руб.</p>
+                     <p>Состояние: ${product.state}</p>
+                       <button onclick="addToCart('${product.name}', ${product.price})" class = "magazine-button">
+                          Добавить в корзину
+                      </button>
+                                                `;
+                container.appendChild(productDiv);
+            });
+        })
+        .catch((error) => console.error("Ошибка загрузки товаров:", error));
+}
+loadProducts();
+```
+
+../static\js\dashboard_subpage\utils.js
+```
+function showErrorMessage(message, element) {
+    element.textContent = message;
+    element.style.color = 'red';
+    element.style.display = 'flex';
+}
+
+function clearErrorMessage() {
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none';
+}
+```
+
+../static\js\dashboard_subsubpage\inventory_assignment\all_assignments.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const allAssignments = document.getElementById("all_assignments");
+    const errorMessage = document.getElementById('error-message-assignments');
+
+    function loadAllAssignments() {
+        fetch('/dashboard/get_all_assignments')
+            .then((response) => response.json())
+            .then((data) => {
+                allAssignments.innerHTML = "";
+                data.forEach((assignment) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${assignment.id}, User ID: ${assignment.user_id}, Inventory ID: ${assignment.inventory_id}, Количество: ${assignment.quantity_assigned}`;
+                    allAssignments.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+
+    loadAllAssignments();
+});
+```
+
+../static\js\dashboard_subsubpage\inventory_assignment\inventory_assignment_create.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const assignInventoryForm = document.getElementById('assign-inventory-form');
+    const errorMessage = document.getElementById('error-message-assignments');
+
+
+    if (assignInventoryForm) {
+        assignInventoryForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(assignInventoryForm);
+            const jsonData = Object.fromEntries(formData.entries());
+
+            fetch('/dashboard/assign_inventory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        clearErrorMessage();
+                        loadAllAssignments();
+                        assignInventoryForm.reset();
+                    } else {
+                        response.text().then(text => {
+                            showErrorMessage(text, errorMessage);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showErrorMessage(
+                        'Произошла ошибка при отправке данных',
+                        errorMessage
+                    );
+                });
+        });
+    }
+});
+```
+
+../static\js\dashboard_subsubpage\inventory_management\all_inventory.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const allInventory = document.getElementById("all_inventory");
+    const errorMessage = document.getElementById('error-message-inventory');
+
+    function loadAllInventory() {
+        fetch('/dashboard/get_all_inventory')
+            .then((response) => response.json())
+            .then((data) => {
+                allInventory.innerHTML = ""; // Очищаем контейнер
+                data.forEach((inventory) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${inventory.id}, Название: ${inventory.name}, Количество: ${inventory.quantity}, Состояние: ${inventory.state}, Цена: ${inventory.price}`;
+                    allInventory.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+    loadAllInventory();
+});
+```
+
+../static\js\dashboard_subsubpage\inventory_management\inventory_add_edit.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const addEditInventoryForm = document.getElementById('add-edit-inventory-form');
+    const errorMessage = document.getElementById('error-message-inventory');
+    const imageTypeEdit = document.getElementById('image_type_edit');
+    const imageInputEdit = document.getElementById('image-input-edit');
+
+    function updateImageInput(selectElement, inputContainer) {
+        const selectedValue = selectElement.value;
+        inputContainer.innerHTML = "";
+
+        if (selectedValue === '1') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = 'image';
+            fileInput.required = true;
+            inputContainer.appendChild(fileInput);
+        } else if (selectedValue === '2') {
+            const textInput = document.createElement('input');
+            textInput.type = 'text';
+            textInput.name = 'image';
+            textInput.placeholder = 'Ссылка на изображение';
+            textInput.required = true;
+            inputContainer.appendChild(textInput);
+        }
+    }
+    updateImageInput(imageTypeEdit, imageInputEdit);
+
+
+    imageTypeEdit.addEventListener('change', function () {
+        updateImageInput(imageTypeEdit, imageInputEdit);
+    });
+
+    if (addEditInventoryForm) {
+        addEditInventoryForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(addEditInventoryForm);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+            const image_type = document.getElementById("image_type_edit").value
+            let url = '/dashboard/inventory_add'
+            if (jsonData['edit-id']) {
+                url = '/dashboard/inventory_edit'
+            }
+
+            fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (response.ok) {
+                        clearErrorMessage();
+                        addEditInventoryForm.reset();
+                        imageInputEdit.innerHTML = "";
+                        updateImageInput(imageTypeEdit, imageInputEdit);
+                        loadAllInventory()
+                    } else {
+                        response.text().then(text => {
+                            showErrorMessage(text, errorMessage);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showErrorMessage(
+                        'Произошла ошибка при отправке данных',
+                        errorMessage
+                    );
+                });
+        });
+    }
+});
+```
+
+../static\js\dashboard_subsubpage\purchases_management\all_purchase_plans.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const allPurchasePlans = document.getElementById("all_purchase_plans");
+    const errorMessage = document.getElementById('error-message-purchases');
+
+    function loadAllPurchases() {
+        fetch('/dashboard/get_all_purchases')
+            .then((response) => response.json())
+            .then((data) => {
+                allPurchasePlans.innerHTML = "";
+                data.forEach((purchase) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${purchase.id}, Inventory ID: ${purchase.inventory_id}, Количество: ${purchase.quantity}, Цена: ${purchase.price}, Поставщик: ${purchase.supplier}`;
+                    allPurchasePlans.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+    loadAllPurchases();
+});
+```
+
+../static\js\dashboard_subsubpage\purchases_management\purchases_add_edit.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const addEditPurchaseForm = document.getElementById('add-edit-purchase-form');
+    const errorMessage = document.getElementById('error-message-purchases');
+
+
+    if (addEditPurchaseForm) {
+        addEditPurchaseForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(addEditPurchaseForm);
+            const jsonData = Object.fromEntries(formData.entries());
+            let url = '/dashboard/purchase_add'
+            if (jsonData['edit-id']) {
+                url = '/dashboard/purchase_edit'
+            }
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        clearErrorMessage();
+                        loadAllPurchases()
+                        addEditPurchaseForm.reset();
+                    } else {
+                        response.text().then(text => {
+                            showErrorMessage(text, errorMessage);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showErrorMessage(
+                        'Произошла ошибка при отправке данных',
+                        errorMessage
+                    );
+                });
+        });
+    }
+});
+```
+
+../static\js\dashboard_subsubpage\reports\all_assignments_and_purchases.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const allAssignmentsReports = document.getElementById("all_assignments_reports");
+    const allPurchasePlansReports = document.getElementById("all_purchase_plans_reports");
+    const errorMessage = document.getElementById('error-message-reports');
+
+    function loadAllInventory() {
+        fetch('/dashboard/get_all_inventory')
+            .then((response) => response.json())
+            .then((data) => {
+                allInventoryReports.innerHTML = ""; // Очищаем контейнер
+                data.forEach((inventory) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${inventory.id}, Название: ${inventory.name}, Количество: ${inventory.quantity}, Состояние: ${inventory.state}, Цена: ${inventory.price}`;
+                    allInventoryReports.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+
+    function loadAllAssignments() {
+        fetch('/dashboard/get_all_assignments')
+            .then((response) => response.json())
+            .then((data) => {
+                allAssignmentsReports.innerHTML = "";
+                data.forEach((assignment) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${assignment.id}, User ID: ${assignment.user_id}, Inventory ID: ${assignment.inventory_id}, Количество: ${assignment.quantity_assigned}`;
+                    allAssignmentsReports.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+
+    function loadAllPurchases() {
+        fetch('/dashboard/get_all_purchases')
+            .then((response) => response.json())
+            .then((data) => {
+                allPurchasePlansReports.innerHTML = "";
+                data.forEach((purchase) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${purchase.id}, Inventory ID: ${purchase.inventory_id}, Количество: ${purchase.quantity}, Цена: ${purchase.price}, Поставщик: ${purchase.supplier}`;
+                    allPurchasePlansReports.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+
+    loadAllAssignments();
+    loadAllPurchases();
+    loadAllInventory();
+});
+```
+
+../static\js\dashboard_subsubpage\reports\all_inventory.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const allInventoryReports = document.getElementById("all_inventory_reports");
+    const errorMessage = document.getElementById('error-message-reports');
+
+    function loadAllInventory() {
+        fetch('/dashboard/get_all_inventory')
+            .then((response) => response.json())
+            .then((data) => {
+                allInventoryReports.innerHTML = ""; // Очищаем контейнер
+                data.forEach((inventory) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${inventory.id}, Название: ${inventory.name}, Количество: ${inventory.quantity}, Состояние: ${inventory.state}, Цена: ${inventory.price}`;
+                    allInventoryReports.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error("Ошибка при загрузке отчета: ", error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+    loadAllInventory();
+});
+```
+
+../static\js\dashboard_subsubpage\requests\all_requests.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const allRequests = document.getElementById("all_requests");
+    const errorMessage = document.getElementById('error-message-requests');
+
+    function loadAllRequests() {
+        fetch('/dashboard/get_all_requests')
+            .then((response) => response.json())
+            .then((data) => {
+                allRequests.innerHTML = "";
+                data.forEach((request) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `ID: ${request.id}, Inventory ID: ${request.inventory_id}, Количество: ${request.quantity_requested}, Тип заявки: ${request.request_type}, Статус: ${request.status}, Дата запроса: ${request.request_date}`;
+                    allRequests.appendChild(listItem);
+                });
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                showErrorMessage(
+                    'Произошла ошибка при загрузке данных',
+                    errorMessage
+                );
+            });
+    }
+    loadAllRequests();
+});
+```
+
+../static\js\dashboard_subsubpage\requests\request_create.js
+```
+document.addEventListener('DOMContentLoaded', function () {
+    const createRequestForm = document.getElementById('create-request-form');
+    const errorMessage = document.getElementById('error-message-requests');
+
+    if (createRequestForm) {
+        createRequestForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(createRequestForm);
+            const jsonData = Object.fromEntries(formData.entries());
+            fetch('/dashboard/request_create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        clearErrorMessage();
+                        loadAllRequests(); // Предполагается, что функция loadAllRequests есть в all_requests.js
+                        createRequestForm.reset();
+                    } else {
+                        response.text().then(text => {
+                            showErrorMessage(text, errorMessage);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showErrorMessage(
+                        'Произошла ошибка при отправке данных',
+                        errorMessage
+                    );
+                });
+        });
+    }
+});
+```
+
+../templates\404.html
+```
+{% extends 'base.html' %} {% block title %}404 Not Found{% endblock %} {% block
+content %}
+<h1>404 Not Found</h1>
+<p>The page you are looking for does not exist.</p>
+{% endblock %}
+
+```
+
+../templates\admin_error.html
+```
+{% extends 'base.html' %} {% block title %}Admin Error{% endblock %} {% block
+content %}
+<h1>Admin Error</h1>
+<p>An error occurred:</p>
+<pre>{{ error }}</pre>
+{% endblock %}
+
+```
+
+../templates\base.html
+```
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+  </body>
+</html>
+
+```
+
+../templates\magazine.html
+```
+{% extends 'base.html' %} {% block title %}Спортивный магазин{% endblock %} {%
+block content %}
+<header>
+  <div>
+    <h1>Спортивный магазин</h1>
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Поиск по имени..."
+      onkeyup="filterProducts()"
+    />
+  </div>
+</header>
+<main id="productContainer">
+  <!-- Продукты будут загружаться сюда -->
+</main>
+<script src="{{ url_for('static', filename='js/cart_and_filter.js') }}"></script>
+<script src="{{ url_for('static', filename='js/magazine.js') }}"></script>
+{% endblock %}
+
+```
+
+../templates\register__sign_up.html
+```
+{% extends 'base.html' %} {% block title %}Register{% endblock %} {% block
+content %}
+<h1>Register Form</h1>
+<div class="form-wrapper">
+  <form id="signin" class="auth-form" method="post" autocomplete="off">
+    <input type="text" id="user" name="user" placeholder="username" required />
+    <div class="pass-input" style="display: none">
+      <input
+        type="password"
+        id="pass"
+        name="pass"
+        placeholder="password"
+        required
+      />
+    </div>
+    <div class="rep-pass-input" style="display: none">
+      <input
+        type="password"
+        id="rep_pass"
+        name="rep_pass"
+        placeholder="repeat password"
+        required
+      />
+    </div>
+
+    <button
+      type="submit"
+      id="RegButton"
+      style="display: none"
+      class="auth-form button"
+    >
+      ▶
+    </button>
+  </form>
+  <div id="error-message"></div>
+  <div class="success-message" style="display: none"></div>
+</div>
+<script
+  src="{{ url_for('static', filename='js/register__sign_up.js') }}"
+  defer
+></script>
+{% endblock %}
+
+```
+
+../templates\sign_in.html
+```
+{% extends 'base.html' %} {% block title %}Sign In{% endblock %} {% block
+content %}
+<h1>Sign In</h1>
+<div class="form-wrapper">
+  <form id="signin" class="auth-form" method="post" autocomplete="off">
+    <input type="text" id="user" name="user" placeholder="username" required />
+    <input
+      type="password"
+      id="pass"
+      name="pass"
+      placeholder="password"
+      required
+    />
+    <button type="submit" id="LogButton" class="auth-form button">▶</button>
+    <p>
+      Don't have an account? <a href="{{ url_for('register') }}">Click here</a>
+    </p>
+    <div id="error-message"></div>
+  </form>
+</div>
+<script
+  src="{{ url_for('static', filename='js/authorization__sign_in.js') }}"
+  defer
+></script>
+{% endblock %}
+
+```
+
+../templates\user_error.html
+```
+{% extends 'base.html' %} {% block title %}User Error{% endblock %} {% block
+content %}
+<h1>Oops!</h1>
+<p>Что-то пошло не так.</p>
+{% endblock %}
+
+```
+
+../templates\dashboard\dashboard.html
+```
+{% extends 'base.html' %} {% block title %}Dashboard{% endblock %} {% block
+content %}
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+  <div class="menu">
+    <!-- Меню навигации -->
+    <nav class="dashboard-nav">
+      {% for page in pages %}
+      <div class="dropdown">
+        <button
+          class="dashboard-button {% if menu == page.name %}active{% endif %}"
+          onclick="loadSubContent('{{page.name}}')"
+        >
+          {{page.name}}
+        </button>
+        {% if page.subpages %}
+        <div class="dropdown-content">
+          {% for subpage in page.subpages | sort(attribute='order') %}
+          <a
+            class="dashboard-subpage-button"
+            onclick="loadSubSubContent('{{page.name}}', '{{subpage.name}}')"
+            >{{ subpage.name }}</a
+          >
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </nav>
+  </div>
+  <script src="{{ url_for('static', filename='js/dashboard_menu.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/utils.js') }}"></script>
+
+  <div class="content">
+    <!-- Контент страницы -->
+  </div>
+  <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
+
+```
+
+../templates\dashboard_subpage\inventory_assignment.html
+```
+<h2>Назначение инвентаря</h2>
+<div class="add-edit-form">
+  <h3>Закрепить инвентарь за пользователем</h3>
+  <form id="assign-inventory-form" method="post">
+    <input
+      type="number"
+      name="user_id"
+      placeholder="ID пользователя"
+      required
+    /><br />
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity_assigned"
+      placeholder="Количество"
+      required
+    /><br />
+    <button class="button auth-form" type="submit">Назначить</button>
+  </form>
+</div>
+<div class="all_assignments_container">
+  <h3>Все назначения</h3>
+  <ul id="all_assignments"></ul>
+</div>
+<div id="error-message-assignments" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_assignment/inventory_assignment_create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_assignment/all_assignments.js') }}"></script>
+
+```
+
+../templates\dashboard_subpage\inventory_management.html
+```
+<h2>Управление инвентарем</h2>
+<div class="add-edit-form">
+  <h3>Добавить новый предмет</h3>
+  <form id="add-edit-inventory-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
+    <input type="text" name="name" placeholder="Название" required /><br />
+    <select name="image_type" id="image_type_edit" required>
+      <option value="0">Без изображения</option>
+      <option value="1">Изображение из папки</option>
+      <option value="2">Изображение по ссылке</option></select
+    ><br />
+    <div id="image-input-edit"></div>
+    <input
+      type="number"
+      name="quantity"
+      placeholder="Количество"
+      required
+    /><br />
+    <select name="state" required>
+      <option value="новый">Новый</option>
+      <option value="используемый">Используемый</option>
+      <option value="сломанный">Сломанный</option></select
+    ><br />
+    <input type="number" name="price" placeholder="Цена" required /><br />
+    <button class="button auth-form" type="submit">Сохранить</button>
+  </form>
+</div>
+<div id="error-message-inventory" class="error-message"></div>
+<div class="all_inventory_container">
+  <h3>Весь инвентарь</h3>
+  <ul id="all_inventory"></ul>
+</div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/inventory_add_edit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/all_inventory.js') }}"></script>
+
+```
+
+../templates\dashboard_subpage\purchases_management.html
+```
+<h2>Управление закупками</h2>
+<div class="add-edit-form">
+  <h3>Добавить/Изменить план закупки</h3>
+  <form id="add-edit-purchase-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity"
+      placeholder="Количество"
+      required
+    /><br />
+    <input type="number" name="price" placeholder="Цена" required /><br />
+    <input type="text" name="supplier" placeholder="Поставщик" required /><br />
+    <button class="button auth-form" type="submit">Сохранить</button>
+  </form>
+</div>
+<div id="error-message-purchases" class="error-message"></div>
+<div class="all_purchase_plans_container">
+  <h3>Все планы закупок</h3>
+  <ul id="all_purchase_plans"></ul>
+</div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/purchases_add_edit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/all_purchase_plans.js') }}"></script>
+
+```
+
+../templates\dashboard_subpage\reports.html
+```
+<h2>Отчёты</h2>
+<div class="reports_container">
+  <h3>Список всего инвентаря с указанием количества и состояния</h3>
+  <ul id="all_inventory_reports"></ul>
+  <h3>Список инвентаря, закрепленного за пользователями</h3>
+  <ul id="all_assignments_reports"></ul>
+  <h3>Список планов закупок</h3>
+  <ul id="all_purchase_plans_reports"></ul>
+</div>
+<div id="error-message-reports" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/reports/all_assignments_and_purchases.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/reports/all_inventory.js') }}"></script>
+
+```
+
+../templates\dashboard_subpage\requests.html
+```
+<h2>Заявки</h2>
+{% if session['role'] == 'user' %}
+<div class="add-edit-form">
+  <h3>Создать заявку</h3>
+  <form id="create-request-form" method="post">
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity_requested"
+      placeholder="Количество"
+      required
+    /><br />
+    <select name="request_type" required>
+      <option value="get">Получить</option>
+      <option value="repair">Ремонт</option>
+      <option value="replace">Заменить</option></select
+    ><br />
+    <button class="button auth-form" type="submit">Создать</button>
+  </form>
+</div>
+{% endif %}
+<input
+  type="text"
+  id="searchInput"
+  placeholder="Поиск по имени..."
+  onkeyup="filterProducts()"
+/>
+<main id="productContainer">
+  <!-- Продукты будут загружаться сюда -->
+</main>
+<div class="all_requests_container">
+  <h3>Все заявки</h3>
+  <ul id="all_requests"></ul>
+</div>
+<div id="error-message-requests" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/requests/request_create.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/requests/all_requests.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cart_and_filter.js') }}"></script>
+<script src="{{ url_for('static', filename='js/requests.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\inventory_assignment\all_assignments.html
+```
+<div class="all_assignments_container">
+  <h3>Все назначения</h3>
+  <ul id="all_assignments"></ul>
+</div>
+<div id="error-message-assignments" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_assignment/all_assignments.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\inventory_assignment\inventory_assignment_create.html
+```
+<div class="add-edit-form">
+  <h3>Закрепить инвентарь за пользователем</h3>
+  <form id="assign-inventory-form" method="post">
+    <input
+      type="number"
+      name="user_id"
+      placeholder="ID пользователя"
+      required
+    /><br />
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity_assigned"
+      placeholder="Количество"
+      required
+    /><br />
+    <button class="button auth-form" type="submit">Назначить</button>
+  </form>
+</div>
+<div id="error-message-assignments" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_assignment/inventory_assignment_create.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\inventory_management\all_inventory.html
+```
+<div class="all_inventory_container">
+  <h3>Весь инвентарь</h3>
+  <ul id="all_inventory"></ul>
+</div>
+<div id="error-message-inventory" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/all_inventory.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\inventory_management\inventory_add_edit.html
+```
+<h2>Управление инвентарем</h2>
+<div class="add-edit-form">
+  <h3>Добавить/Изменить предмет</h3>
+  <form id="add-edit-inventory-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
+    <input type="text" name="name" placeholder="Название" required /><br />
+    <select name="image_type" id="image_type_edit" required>
+      <option value="0">Без изображения</option>
+      <option value="1">Изображение из папки</option>
+      <option value="2">Изображение по ссылке</option></select
+    ><br />
+    <div id="image-input-edit"></div>
+    <input
+      type="number"
+      name="quantity"
+      placeholder="Количество"
+      required
+    /><br />
+    <select name="state" required>
+      <option value="новый">Новый</option>
+      <option value="используемый">Используемый</option>
+      <option value="сломанный">Сломанный</option></select
+    ><br />
+    <input type="number" name="price" placeholder="Цена" required /><br />
+    <button class="button auth-form" type="submit">Сохранить</button>
+  </form>
+</div>
+<div id="error-message-inventory" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/inventory_add_edit.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\purchases_management\all_purchase_plans.html
+```
+<div class="all_purchase_plans_container">
+  <h3>Все планы закупок</h3>
+  <ul id="all_purchase_plans"></ul>
+</div>
+<div id="error-message-purchases" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/all_purchase_plans.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\purchases_management\purchases_add_edit.html
+```
+<div class="add-edit-form">
+  <h3>Добавить/Изменить план закупки</h3>
+  <form id="add-edit-purchase-form" method="post">
+    <input
+      type="number"
+      name="edit-id"
+      placeholder="ID (для редактирования)"
+    /><br />
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity"
+      placeholder="Количество"
+      required
+    /><br />
+    <input type="number" name="price" placeholder="Цена" required /><br />
+    <input type="text" name="supplier" placeholder="Поставщик" required /><br />
+    <button class="button auth-form" type="submit">Сохранить</button>
+  </form>
+</div>
+<div id="error-message-purchases" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/purchases_add_edit.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\reports\all_assignments_and_purchases.html
+```
+<div class="reports_container">
+  <h3>Список инвентаря, закрепленного за пользователями</h3>
+  <ul id="all_assignments_reports"></ul>
+  <h3>Список планов закупок</h3>
+  <ul id="all_purchase_plans_reports"></ul>
+</div>
+<div id="error-message-reports" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/reports/all_assignments_and_purchases.js') }}"></script>
+
+```
+
+../templates\dashboard_subsubpage\reports\all_inventory.html
+```
+<div class="reports_container">
+  <h3>Список всего инвентаря с указанием количества и состояния</h3>
+  <ul id="all_inventory_reports"></ul>
+</div>
+<div id="error-message-reports" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/reports/all_inventory.js') }}"></script>
+
+```
+

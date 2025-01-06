@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const allInventory = document.getElementById("all_inventory");
+    const errorMessage = document.getElementById('error-message-inventory');
 
     function loadAllInventory() {
         fetch('/dashboard/get_all_inventory')
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Ошибка:', error);
                 showErrorMessage(
                     'Произошла ошибка при загрузке данных',
-                    document.getElementById('error-message-inventory')
+                    errorMessage
                 );
             });
     }
