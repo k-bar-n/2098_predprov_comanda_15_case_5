@@ -91,7 +91,6 @@ if __name__ == "__main__":
         ".idea",
         ".venv",
         "resources",
-        ".gitignore",
         "cert.pem",
         "key.pem",
         "README.md",

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => {
                     if (response.ok) {
                         clearErrorMessage();
-                        loadAllRequests(); // Предполагается, что функция loadAllRequests есть в all_requests.js
+                        loadAllRequests();
                         createRequestForm.reset();
                     } else {
                         response.text().then(text => {

@@ -1,15 +1,13 @@
 {% extends 'base.html' %} {% block title %}Спортивный магазин{% endblock %} {%
 block content %}
 <header>
-  <div>
-    <h1>Спортивный магазин</h1>
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Поиск по имени..."
-      onkeyup="filterProducts()"
-    />
-  </div>
+  <h1>Спортивный магазин</h1>
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Поиск по имени..."
+    onkeyup="filterProducts()"
+  />
 </header>
 <main id="productContainer">
   <!-- Продукты будут загружаться сюда -->

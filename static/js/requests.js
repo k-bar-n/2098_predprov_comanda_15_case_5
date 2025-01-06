@@ -1,5 +1,5 @@
 function loadProducts() {
-    fetch("/dashboard/get_all_inventory") // Запрос к Flask
+    fetch("/dashboard/get_all_inventory")
         .then((response) => response.json())
         .then((data) => {
             const container = document.getElementById("productContainer");

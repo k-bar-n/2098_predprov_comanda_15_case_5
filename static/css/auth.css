@@ -1,0 +1,113 @@
+/* Общее для форм */
+.form-wrapper {
+    width: 50vw;
+    margin: 50px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form button[type="submit"] {
+    width: 100%;
+    background: rgb(36, 36, 37);
+    color: rgb(52, 56, 61);
+    border: 0;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    outline: none;
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus {
+    color: rgb(255, 255, 255);
+}
+
+.auth-form button[type="submit"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 60px;
+    color: rgb(36, 36, 37);
+    border-radius: 50px;
+    border: 8px solid rgb(36, 36, 37);
+    /* font-size: 30px; */
+    text-align: center;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.auth-form button[type="submit"]:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+}
+
+.auth-form.continue-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 70px;
+    margin: 20px auto;
+    background: rgb(36, 36, 37);
+    color: rgb(52, 56, 61);
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.auth-form.continue-button:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+}
+
+.auth-form p {
+    color: rgb(79, 85, 97);
+    padding: 0 30px;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 10px 0 0 0;
+}
+
+#error-message {
+    color: red;
+    display: none;
+    font-size: 1.3rem;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    margin-top: 15px;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.success-message {
+    color: rgb(79, 85, 97);
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 15px;
+}
+
+.check_pass {
+    color: red;
+    margin-top: 3px;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    display: none;
+}
