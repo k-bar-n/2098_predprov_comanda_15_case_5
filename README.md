@@ -438,6 +438,7 @@
 |---key.pem
 |---main.py
 |---README.md
+|---soder_script.py
 |---.git
 |---.idea
 |---.venv
@@ -449,10 +450,14 @@
 |   |---users.json
 |   `---user_pages_settings.json
 |---resources
-|   `---Командный кейс №5 «Управление спортивным инвентарем».pdf
+|   `---Komandnyy keys №5 «Upravleniye sportivnym inventarem».pdf
 |---static
 |   |---css
-|   |   `---style.css
+|   |   |---auth.css
+|   |   |---base.css
+|   |   |---dashboard.css
+|   |   |---dashboard_elements.css
+|   |   `---magazine.css
 |   |---fonts
 |   |   |---COPYRIGHT.txt
 |   |   `---GOST_Type_A.ttf

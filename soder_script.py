@@ -95,7 +95,6 @@ if __name__ == "__main__":
         "key.pem",
         "README.md",
         "static/fonts",
-        "soder_script.py",
         "soder.txt",
         "FileTree.txt"
     ]
