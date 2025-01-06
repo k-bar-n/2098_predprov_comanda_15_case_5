@@ -4,11 +4,11 @@
       "name": "inventory_management",
       "subpages": [
         {
-          "name": "inventory_add_edit",
+          "name": "all_inventory",
           "order": 1
         },
         {
-          "name": "all_inventory",
+          "name": "inventory_add_edit",
           "order": 2
         }
       ]
@@ -17,11 +17,11 @@
       "name": "inventory_assignment",
       "subpages": [
         {
-          "name": "inventory_assignment_create",
+          "name": "all_assignments",
           "order": 1
         },
         {
-          "name": "all_assignments",
+          "name": "inventory_assignment_create",
           "order": 2
         }
       ]
@@ -30,11 +30,11 @@
       "name": "purchases_management",
       "subpages": [
         {
-          "name": "purchases_add_edit",
+          "name": "all_purchase_plans",
           "order": 1
         },
         {
-          "name": "all_purchase_plans",
+          "name": "purchases_add_edit",
           "order": 2
         }
       ]
@@ -54,17 +54,36 @@
     },
     {
       "name": "requests",
-      "subpages": []
+      "subpages": [
+        {
+          "name": "request_create",
+          "order": 1
+        },
+        {
+          "name": "all_requests",
+          "order": 2
+        }
+      ]
     }
   ],
   "user": [
     {
-      "name": "inventory",
-      "subpages": []
+      "name": "inventory_management",
+      "subpages": [
+        {
+          "name": "all_inventory",
+          "order": 1
+        }
+      ]
     },
     {
       "name": "requests",
-      "subpages": []
+      "subpages": [
+        {
+          "name": "request_create",
+          "order": 1
+        }
+      ]
     }
   ]
 }

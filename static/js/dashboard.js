@@ -26,9 +26,19 @@ function loadSubSubContent(menu, subpage) {
     if (activeButton) {
         activeButton.classList.add("active");
     }
+
+    console.log(`Загрузка подстраницы: menu=${menu}, subpage=${subpage}`);
     fetch(`/dashboard/load_page?menu=${menu}&subpage=${subpage}`)
-        .then((response) => response.text())
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then((html) => {
             document.querySelector(".content").innerHTML = html;
+        })
+        .catch((error) => {
+            console.error("Ошибка загрузки подстраницы:", error);
         });
 }

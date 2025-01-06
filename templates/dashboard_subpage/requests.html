@@ -1,44 +1,22 @@
 <h2>Заявки</h2>
-{% if session['role'] == 'user' %}
-<div class="add-edit-form">
-  <h3>Создать заявку</h3>
-  <form id="create-request-form" method="post">
-    <input
-      type="number"
-      name="inventory_id"
-      placeholder="ID инвентаря"
-      required
-    /><br />
-    <input
-      type="number"
-      name="quantity_requested"
-      placeholder="Количество"
-      required
-    /><br />
-    <select name="request_type" required>
-      <option value="get">Получить</option>
-      <option value="repair">Ремонт</option>
-      <option value="replace">Заменить</option></select
-    ><br />
-    <button class="button auth-form" type="submit">Создать</button>
-  </form>
+<div class="requests_container">
+  <nav class="dashboard-nav">
+    <button
+      class="dashboard-button"
+      onclick="loadSubSubContent('requests', 'all_requests')"
+    >
+      Все заявки
+    </button>
+    {% if session['role'] == 'admin' %}
+    <button
+      class="dashboard-button"
+      onclick="loadSubSubContent('requests', 'request_create')"
+    >
+      Создать заявку
+    </button>
+    {% endif %}
+  </nav>
+  <div class="content"></div>
 </div>
-{% endif %}
-<input
-  type="text"
-  id="searchInput"
-  placeholder="Поиск по имени..."
-  onkeyup="filterProducts()"
-/>
-<main id="productContainer">
-  <!-- Продукты будут загружаться сюда -->
-</main>
-<div class="all_requests_container">
-  <h3>Все заявки</h3>
-  <ul id="all_requests"></ul>
-</div>
-<div id="error-message-requests" class="error-message"></div>
-<script src="{{ url_for('static', filename='js/dashboard_subsubpage/requests/request_create.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dashboard_subsubpage/requests/all_requests.js') }}"></script>
 <script src="{{ url_for('static', filename='js/cart_and_filter.js') }}"></script>
 <script src="{{ url_for('static', filename='js/requests.js') }}"></script>

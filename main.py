@@ -153,7 +153,7 @@ def dashboard():
 def load_subpage():
     menu = request.args.get('menu')
     subpage = request.args.get('subpage')
-    print(f"Loading subpage: menu={menu}, subpage={subpage}")
+    print(f"Загрузка subpage: menu={menu}, subpage={subpage}")
     if menu == "inventory_management":
         if subpage == "inventory_add_edit":
             return render_template('dashboard_subsubpage/inventory_management/inventory_add_edit.html')
@@ -175,7 +175,10 @@ def load_subpage():
         elif subpage == "all_assignments_and_purchases":
             return render_template('dashboard_subsubpage/reports/all_assignments_and_purchases.html')
     elif menu == "requests":
-        return render_template('dashboard_subpage/requests.html')
+        if subpage == "all_requests":
+            return render_template('dashboard_subsubpage/requests/all_requests.html')
+        if subpage == "request_create":
+            return render_template('dashboard_subsubpage/requests/request_create.html')
     return "Страница не найдена", 404
 
 

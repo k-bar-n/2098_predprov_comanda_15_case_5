@@ -1,0 +1,25 @@
+<div class="add-edit-form">
+  <h3>Создать заявку</h3>
+  <form id="create-request-form" method="post">
+    <input
+      type="number"
+      name="inventory_id"
+      placeholder="ID инвентаря"
+      required
+    /><br />
+    <input
+      type="number"
+      name="quantity_requested"
+      placeholder="Количество"
+      required
+    /><br />
+    <select name="request_type" required>
+      <option value="get">Получить</option>
+      <option value="repair">Ремонт</option>
+      <option value="replace">Заменить</option></select
+    ><br />
+    <button class="button auth-form" type="submit">Создать</button>
+  </form>
+</div>
+<div id="error-message-requests" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/requests/request_create.js') }}"></script>

@@ -4,41 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f580404a-9264-4da0-a802-6404d55b2648" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inventory.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/inventory.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inventory_assignments.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/inventory_assignments.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/purchase_plans.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/purchase_plans.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/requests.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/requests.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/users.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subpage/inventory_assignment.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subpage/inventory_management.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subpage/purchases_management.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subpage/reports.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subpage/requests.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_assignment/all_assignments.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_assignment/all_assignments.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/all_inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/all_inventory.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/inventory_add_edit.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/inventory_add_edit.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/purchases_management/all_purchase_plans.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/purchases_management/all_purchase_plans.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_assignments_and_purchases.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_assignments_and_purchases.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_inventory.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/requests/all_requests.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/requests/all_requests.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subpage/inventory_assignment.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subpage/inventory_assignment.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subpage/inventory_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subpage/inventory_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subpage/purchases_management.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subpage/purchases_management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subpage/reports.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subpage/reports.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subpage/requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subpage/requests.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_assignment/all_assignments.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_assignment/all_assignments.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_management/all_inventory.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_management/all_inventory.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_management/inventory_add_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_management/inventory_add_edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/purchases_management/all_purchase_plans.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/purchases_management/all_purchase_plans.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_assignments_and_purchases.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_assignments_and_purchases.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_inventory.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_inventory.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/magazine.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/magazine.html" afterDir="false" />
-    </list>
+    <list default="true" id="f580404a-9264-4da0-a802-6404d55b2648" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
