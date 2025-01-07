@@ -47,8 +47,12 @@
           "order": 1
         },
         {
-          "name": "all_assignments_and_purchases",
+          "name": "all_assignments",
           "order": 2
+        },
+        {
+          "name": "all_purchases",
+          "order": 3
         }
       ]
     },

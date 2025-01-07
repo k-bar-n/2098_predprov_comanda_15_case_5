@@ -37,6 +37,29 @@ function loadSubSubContent(menu, subpage) {
         })
         .then((html) => {
             document.querySelector(".content").innerHTML = html;
+
+            if (menu == "inventory_management" && subpage == "all_inventory") {
+                loadAllInventory();
+            }
+            if (menu == "inventory_assignment" && subpage == "all_assignments") {
+                loadAllAssignments();
+            }
+            if (menu == "purchases_management" && subpage == "all_purchase_plans") {
+                loadAllPurchases();
+            }
+            if (menu == "reports" && subpage == "all_inventory") {
+                loadAllInventoryForReport();
+            }
+            if (menu == "reports" && subpage == "all_assignments") {
+                loadAllAssignmentsForReport();
+            }
+            if (menu == "reports" && subpage == "all_purchases") {
+                loadAllPurchasesForReport();
+            }
+            if (menu == "requests" && subpage == "all_requests") {
+                loadAllRequests();
+            }
+
         })
         .catch((error) => {
             console.error("Ошибка загрузки подстраницы:", error);

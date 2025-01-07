@@ -1,19 +1,19 @@
-function loadAllInventoryForReport() {
-    const allInventoryReports = document.getElementById("all_inventory_reports");
+function loadAllAssignmentsForReport() {
+    const allAssignmentsReports = document.getElementById("all_assignments_reports");
     const errorMessage = document.getElementById('error-message-reports');
 
-    fetch('/dashboard/get_all_inventory_for_report')
+    fetch('/dashboard/get_all_assignments_for_report')
         .then((response) => response.json())
         .then((data) => {
-            allInventoryReports.innerHTML = "";
+            allAssignmentsReports.innerHTML = "";
             const table = document.createElement('table');
             table.classList.add('report-table');
 
             // Заголовки таблицы
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            ['ID', 'Название', 'Количество', 'Состояние', 'Цена'].forEach(text => {
-                const th = document.createElement('th');
+            let thead = document.createElement('thead');
+            let headerRow = document.createElement('tr');
+            ['ID', 'User ID', 'Inventory ID', 'Количество', 'Дата назначения'].forEach(text => {
+                let th = document.createElement('th');
                 th.textContent = text;
                 headerRow.appendChild(th);
             });
@@ -21,19 +21,21 @@ function loadAllInventoryForReport() {
             table.appendChild(thead);
 
             // Тело таблицы
-            const tbody = document.createElement('tbody');
-            data.forEach(inventory => {
-                const row = document.createElement('tr');
-                ['id', 'name', 'quantity', 'state', 'price'].forEach(key => {
-                    const td = document.createElement('td');
-                    td.textContent = inventory[key];
+            let tbody = document.createElement('tbody');
+            data.forEach(assignment => {
+                let row = document.createElement('tr');
+                ['id', 'user_id', 'inventory_id', 'quantity_assigned', 'assignment_date'].forEach(key => {
+                    let td = document.createElement('td');
+                    td.textContent = assignment[key];
                     row.appendChild(td);
                 });
                 tbody.appendChild(row);
             });
             table.appendChild(tbody);
 
-            allInventoryReports.appendChild(table);
+            allAssignmentsReports.appendChild(table);
+
+
         })
         .catch((error) => {
             console.error("Ошибка при загрузке отчета: ", error);

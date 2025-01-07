@@ -1,18 +1,18 @@
-function loadAllInventoryForReport() {
-    const allInventoryReports = document.getElementById("all_inventory_reports");
+function loadAllPurchasesForReport() {
+    const allPurchasePlansReports = document.getElementById("all_purchase_plans_reports");
     const errorMessage = document.getElementById('error-message-reports');
 
-    fetch('/dashboard/get_all_inventory_for_report')
+    fetch('/dashboard/get_all_purchases_for_report')
         .then((response) => response.json())
         .then((data) => {
-            allInventoryReports.innerHTML = "";
+            allPurchasePlansReports.innerHTML = "";
             const table = document.createElement('table');
             table.classList.add('report-table');
 
             // Заголовки таблицы
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
-            ['ID', 'Название', 'Количество', 'Состояние', 'Цена'].forEach(text => {
+            ['ID', 'Inventory ID', 'Количество', 'Цена', 'Поставщик'].forEach(text => {
                 const th = document.createElement('th');
                 th.textContent = text;
                 headerRow.appendChild(th);
@@ -22,18 +22,19 @@ function loadAllInventoryForReport() {
 
             // Тело таблицы
             const tbody = document.createElement('tbody');
-            data.forEach(inventory => {
+            data.forEach(purchase => {
                 const row = document.createElement('tr');
-                ['id', 'name', 'quantity', 'state', 'price'].forEach(key => {
+                ['id', 'inventory_id', 'quantity', 'price', 'supplier'].forEach(key => {
                     const td = document.createElement('td');
-                    td.textContent = inventory[key];
+                    td.textContent = purchase[key];
                     row.appendChild(td);
                 });
                 tbody.appendChild(row);
             });
             table.appendChild(tbody);
 
-            allInventoryReports.appendChild(table);
+
+            allPurchasePlansReports.appendChild(table);
         })
         .catch((error) => {
             console.error("Ошибка при загрузке отчета: ", error);

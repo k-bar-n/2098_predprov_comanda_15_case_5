@@ -6,7 +6,9 @@ content %}
     <!-- Меню навигации -->
     <nav class="dashboard-nav">
       {% for page in pages %}
-      <div class="dropdown">
+      <div
+        class="dashboard-menu-item {% if not page.subpages %}disabled{% endif %}"
+      >
         <button
           class="dashboard-button {% if menu == page.name %}active{% endif %}"
           onclick="loadSubContent('{{page.name}}')"

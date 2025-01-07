@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         addEditInventoryForm.reset();
                         imageInputEdit.innerHTML = "";
                         updateImageInput(imageTypeEdit, imageInputEdit);
-                        loadAllInventory()
+                        loadAllInventory();
                     } else {
                         response.text().then(text => {
                             showErrorMessage(text, errorMessage);

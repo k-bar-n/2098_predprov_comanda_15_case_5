@@ -39,6 +39,15 @@
     background-color: rgb(46, 44, 44);
 }
 
+.all_inventory_container .product {
+    width: 300px;
+    height: auto;
+}
+
+.all_inventory_container .product img {
+    height: 150px;
+}
+
 .all_inventory_container ul li,
 .all_assignments_container ul li,
 .all_purchase_plans_container ul li,
@@ -47,6 +56,24 @@
     text-align: start;
     margin: 10px 0;
     font-size: 1.1rem;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.report-table th,
+.report-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.report-table th {
+    background-color: #444;
+    color: white;
 }
 
 /* Стили, для отображения выпадающего меню */

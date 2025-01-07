@@ -143,7 +143,7 @@ def dashboard():
         pages = user_pages_settings.get(session['role'], [])
 
         if session['role'] == 'user':
-            if menu not in ['requests', None]:
+            if menu not in ['requests', None, 'inventory_management']:
                 return redirect(url_for('dashboard'))
         return render_template('dashboard/dashboard.html', menu=menu, pages=pages)
     return redirect(url_for('signin'))
@@ -172,8 +172,10 @@ def load_subpage():
     elif menu == "reports":
         if subpage == "all_inventory":
             return render_template('dashboard_subsubpage/reports/all_inventory.html')
-        elif subpage == "all_assignments_and_purchases":
-            return render_template('dashboard_subsubpage/reports/all_assignments_and_purchases.html')
+        elif subpage == "all_assignments":
+            return render_template('dashboard_subsubpage/reports/all_assignments.html')
+        elif subpage == "all_purchases":
+            return render_template('dashboard_subsubpage/reports/all_purchases.html')
     elif menu == "requests":
         if subpage == "all_requests":
             return render_template('dashboard_subsubpage/requests/all_requests.html')
@@ -253,6 +255,21 @@ def inventory_edit():
     except Exception as e:
         print(e)
         return "Ошибка изменения инвентаря", 500
+
+
+@app.route('/dashboard/inventory_delete', methods=['POST'])
+def inventory_delete():
+    try:
+        data = request.get_json()
+        inventory_id = int(data['inventory_id'])
+        inventory = load_json('inventory.json')
+        updated_inventory = [
+            item for item in inventory if item['id'] != inventory_id]
+        save_json('inventory.json', updated_inventory)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка удаления инвентаря", 500
 
 
 @app.route('/dashboard/get_all_inventory')
@@ -352,7 +369,7 @@ def get_all_purchases():
 
 
 # Маршруты для reports
-@app.route('/dashboard/get_all_inventory')
+@app.route('/dashboard/get_all_inventory_for_report')
 def get_all_inventory_for_report():
     try:
         inventory = load_json('inventory.json')
@@ -363,7 +380,7 @@ def get_all_inventory_for_report():
         return "Error loading inventory", 500
 
 
-@app.route('/dashboard/get_all_assignments')
+@app.route('/dashboard/get_all_assignments_for_report')
 def get_all_assignments_for_report():
     try:
         assignments = load_json('inventory_assignments.json')
@@ -374,7 +391,7 @@ def get_all_assignments_for_report():
         return "Error loading assignments", 500
 
 
-@app.route('/dashboard/get_all_purchases')
+@app.route('/dashboard/get_all_purchases_for_report')
 def get_all_purchases_for_report():
     try:
         purchases = load_json('purchase_plans.json')
@@ -407,6 +424,25 @@ def request_create():
     except Exception as e:
         print(e)
         return "Ошибка создания запроса", 500
+
+
+@app.route('/dashboard/request_update_status', methods=['POST'])
+def request_update_status():
+    try:
+        data = request.get_json()
+        request_id = int(data['request_id'])
+        status = data['status']
+
+        requests = load_json('requests.json')
+        for item in requests:
+            if item['id'] == request_id:
+                item['status'] = status
+                break
+        save_json('requests.json', requests)
+        return '', 200
+    except Exception as e:
+        print(e)
+        return "Ошибка обновления статуса заявки", 500
 
 
 @app.route('/dashboard/get_all_requests')
