@@ -1,3 +1,4 @@
+{% extends 'dashboard/dashboard.html' %} {% block dashboard_content %}
 <div class="add-edit-form">
   <h3>Добавить/Изменить план закупки</h3>
   <form id="add-edit-purchase-form" method="post">
@@ -25,3 +26,4 @@
 </div>
 <div id="error-message-purchases" class="error-message"></div>
 <script src="{{ url_for('static', filename='js/dashboard_subsubpage/purchases_management/purchases_add_edit.js') }}"></script>
+{% endblock %}

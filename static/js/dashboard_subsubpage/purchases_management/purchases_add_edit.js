@@ -1,7 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+function initPurchasesAddEdit() {
     const addEditPurchaseForm = document.getElementById('add-edit-purchase-form');
     const errorMessage = document.getElementById('error-message-purchases');
-
 
     if (addEditPurchaseForm) {
         addEditPurchaseForm.addEventListener('submit', function (e) {
@@ -39,4 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+}
+document.addEventListener('DOMContentLoaded', function () {
+    initPurchasesAddEdit();
 });

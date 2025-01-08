@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+function initInventoryAddEdit() {
     const addEditInventoryForm = document.getElementById('add-edit-inventory-form');
     const errorMessage = document.getElementById('error-message-inventory');
     const imageTypeEdit = document.getElementById('image_type_edit');
@@ -70,4 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initInventoryAddEdit()
 });

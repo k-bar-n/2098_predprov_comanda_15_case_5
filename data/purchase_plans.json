@@ -1,72 +1,72 @@
 [
-  {
-    "id": 1,
-    "inventory_id": 1,
-    "quantity": 15,
-    "price": 3000,
-    "supplier": "Спортмастер"
-  },
-  {
-    "id": 2,
-    "inventory_id": 2,
-    "quantity": 20,
-    "price": 1000,
-    "supplier": "Декатлон"
-  },
-  {
-    "id": 3,
-    "inventory_id": 3,
-    "quantity": 10,
-    "price": 900,
-    "supplier": "Adidas"
-  },
-  {
-    "id": 4,
-    "inventory_id": 4,
-    "quantity": 10,
-    "price": 1000,
-    "supplier": "Nike"
-  },
-  {
-    "id": 5,
-    "inventory_id": 5,
-    "quantity": 5,
-    "price": 10000000,
-    "supplier": "Пума"
-  },
-  {
-    "id": 6,
-    "inventory_id": 6,
-    "quantity": 12,
-    "price": 12000,
-    "supplier": "Reebok"
-  },
-  {
-    "id": 7,
-    "inventory_id": 7,
-    "quantity": 10,
-    "price": 7000,
-    "supplier": "Umbro"
-  },
-  {
-    "id": 8,
-    "inventory_id": 8,
-    "quantity": 11,
-    "price": 8000,
-    "supplier": "New Balance"
-  },
-  {
-    "id": 9,
-    "inventory_id": 9,
-    "quantity": 22,
-    "price": 4000,
-    "supplier": "ASICS"
-  },
-  {
-    "id": 10,
-    "inventory_id": 10,
-    "quantity": 33,
-    "price": 3100,
-    "supplier": "Mizuno"
-  }
+    {
+        "id": 1,
+        "inventory_id": 1,
+        "quantity": 15,
+        "price": 3000,
+        "supplier": "Спортмастер"
+    },
+    {
+        "id": 2,
+        "inventory_id": 2,
+        "quantity": 20,
+        "price": 1000,
+        "supplier": "Декатлон"
+    },
+    {
+        "id": 3,
+        "inventory_id": 3,
+        "quantity": 10,
+        "price": 900,
+        "supplier": "Adidas"
+    },
+    {
+        "id": 4,
+        "inventory_id": 4,
+        "quantity": 10,
+        "price": 1000,
+        "supplier": "Nike"
+    },
+    {
+        "id": 5,
+        "inventory_id": 5,
+        "quantity": 5,
+        "price": 10000000,
+        "supplier": "Пума"
+    },
+    {
+        "id": 6,
+        "inventory_id": 6,
+        "quantity": 12,
+        "price": 12000,
+        "supplier": "Reebok"
+    },
+    {
+        "id": 7,
+        "inventory_id": 7,
+        "quantity": 10,
+        "price": 7000,
+        "supplier": "Umbro"
+    },
+    {
+        "id": 8,
+        "inventory_id": 8,
+        "quantity": 11,
+        "price": 8000,
+        "supplier": "New Balance"
+    },
+    {
+        "id": 9,
+        "inventory_id": 9,
+        "quantity": 22,
+        "price": 4000,
+        "supplier": "ASICS"
+    },
+    {
+        "id": 10,
+        "inventory_id": 10,
+        "quantity": 33,
+        "price": 3100,
+        "supplier": "Mizuno"
+    }
 ]

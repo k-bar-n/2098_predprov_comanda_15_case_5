@@ -96,7 +96,11 @@ if __name__ == "__main__":
         "README.md",
         "static/fonts",
         "soder.txt",
-        "FileTree.txt"
+        "FileTree.txt",
+        "static/images",
+        "COPYRIGHT.txt",
+        "GOST_Type_A.ttf",
+        "soder_script.py"
     ]
 
     file_paths = get_file_paths(

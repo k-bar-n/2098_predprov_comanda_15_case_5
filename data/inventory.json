@@ -1,146 +1,146 @@
 [
-  {
-    "id": 1,
-    "name": "Спорт-обувь",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdvFZoLvLfzrOp8UKsbjkDl3_dh4S6OHAScg&s",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 2999
-  },
-  {
-    "id": 2,
-    "name": "Футболка",
-    "image": "2.jpeg",
-    "image_type": 1,
-    "quantity": 10,
-    "state": "новый",
-    "price": 999
-  },
-  {
-    "id": 3,
-    "name": "Футболка",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYb6P5RbBa2ukvmLi1QdNYWBSBaIQTGOmbKg&s",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 999
-  },
-  {
-    "id": 4,
-    "name": "Футболка",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXhZd1YfD0hPyiQcBb5jpgpHszknEi87ibpw&s",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 999
-  },
-  {
-    "id": 5,
-    "name": "подкрадули",
-    "image": "5.jpeg",
-    "image_type": 1,
-    "quantity": 10,
-    "state": "новый",
-    "price": 9999999
-  },
-  {
-    "id": 6,
-    "name": "Кроссовки",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcIyxteB4V5iMTf0y6rOkz04w7VsTaUmvdbA&s",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 11999
-  },
-  {
-    "id": 7,
-    "name": "Мяч(Б)",
-    "image": "7.jpeg",
-    "image_type": 1,
-    "quantity": 10,
-    "state": "новый",
-    "price": 6799
-  },
-  {
-    "id": 8,
-    "name": "Мяч(Б)",
-    "image": "8.jpeg",
-    "image_type": 1,
-    "quantity": 10,
-    "state": "новый",
-    "price": 7999
-  },
-  {
-    "id": 9,
-    "name": "джоггеры",
-    "image": "9.jpeg",
-    "image_type": 1,
-    "quantity": 10,
-    "state": "новый",
-    "price": 3999
-  },
-  {
-    "id": 10,
-    "name": "Брюки",
-    "image": "10.jpeg",
-    "image_type": 1,
-    "quantity": 10,
-    "state": "новый",
-    "price": 3099
-  },
-  {
-    "id": 11,
-    "name": "(М).спорт-куртка",
-    "image": "https://images2.zoodmall.uz/cdn-cgi/image/w=500,fit=contain,f=auto/https%3A%2F%2Fimg.joomcdn.net%2F6c932a377d1cb6ccd698dfa67ca135780ce57a89_original.jpeg",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 5699
-  },
-  {
-    "id": 12,
-    "name": "Мужская-куртка",
-    "image": "https://images2.zoodmall.uz/cdn-cgi/image/w=500,fit=contain,f=auto/https%3A%2F%2Fimg.joomcdn.net%2Fb1528e93ca190272b759da9caf512ea9f77c8868_original.jpeg",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 8999
-  },
-  {
-    "id": 13,
-    "name": "Пальто",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMeCVAnGrSb313DVvbmZbmE4NJSA81bnlMYg&s",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 7999
-  },
-  {
-    "id": 14,
-    "name": "Шарф",
-    "image": "https://imgcdn.zarina.ru/upload/images/44710/thumb/900_9999/4471015006_50_1.webp?t=1726484080",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 1899
-  },
-  {
-    "id": 15,
-    "name": "Спортивные-штаны",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPhJ4W3JZEt2XqynY1o0V5Xw8iR1v4rOMywQ&s",
-    "image_type": 2,
-    "quantity": 10,
-    "state": "новый",
-    "price": 1499
-  },
-  {
-    "id": 16,
-    "name": "-",
-    "image": "",
-    "image_type": 0,
-    "quantity": 0,
-    "state": "сломан",
-    "price": 0
-  }
+    {
+        "id": 1,
+        "name": "Спорт-обувь",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdvFZoLvLfzrOp8UKsbjkDl3_dh4S6OHAScg&s",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 2999
+    },
+    {
+        "id": 2,
+        "name": "Футболка",
+        "image": "2.jpeg",
+        "image_type": 1,
+        "quantity": 10,
+        "state": "новый",
+        "price": 999
+    },
+    {
+        "id": 3,
+        "name": "Футболка",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYb6P5RbBa2ukvmLi1QdNYWBSBaIQTGOmbKg&s",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 999
+    },
+    {
+        "id": 4,
+        "name": "Футболка",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXhZd1YfD0hPyiQcBb5jpgpHszknEi87ibpw&s",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 999
+    },
+    {
+        "id": 5,
+        "name": "подкрадули",
+        "image": "5.jpeg",
+        "image_type": 1,
+        "quantity": 10,
+        "state": "новый",
+        "price": 9999999
+    },
+    {
+        "id": 6,
+        "name": "Кроссовки",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcIyxteB4V5iMTf0y6rOkz04w7VsTaUmvdbA&s",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 11999
+    },
+    {
+        "id": 7,
+        "name": "Мяч(Б)",
+        "image": "7.jpeg",
+        "image_type": 1,
+        "quantity": 10,
+        "state": "новый",
+        "price": 6799
+    },
+    {
+        "id": 8,
+        "name": "Мяч(Б)",
+        "image": "8.jpeg",
+        "image_type": 1,
+        "quantity": 10,
+        "state": "новый",
+        "price": 7999
+    },
+    {
+        "id": 9,
+        "name": "джоггеры",
+        "image": "9.jpeg",
+        "image_type": 1,
+        "quantity": 10,
+        "state": "новый",
+        "price": 3999
+    },
+    {
+        "id": 10,
+        "name": "Брюки",
+        "image": "10.jpeg",
+        "image_type": 1,
+        "quantity": 10,
+        "state": "новый",
+        "price": 3099
+    },
+    {
+        "id": 11,
+        "name": "(М).спорт-куртка",
+        "image": "https://images2.zoodmall.uz/cdn-cgi/image/w=500,fit=contain,f=auto/https%3A%2F%2Fimg.joomcdn.net%2F6c932a377d1cb6ccd698dfa67ca135780ce57a89_original.jpeg",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 5699
+    },
+    {
+        "id": 12,
+        "name": "Мужская-куртка",
+        "image": "https://images2.zoodmall.uz/cdn-cgi/image/w=500,fit=contain,f=auto/https%3A%2F%2Fimg.joomcdn.net%2Fb1528e93ca190272b759da9caf512ea9f77c8868_original.jpeg",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 8999
+    },
+    {
+        "id": 13,
+        "name": "Пальто",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMeCVAnGrSb313DVvbmZbmE4NJSA81bnlMYg&s",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 7999
+    },
+    {
+        "id": 14,
+        "name": "Шарф",
+        "image": "https://imgcdn.zarina.ru/upload/images/44710/thumb/900_9999/4471015006_50_1.webp?t=1726484080",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 1899
+    },
+    {
+        "id": 15,
+        "name": "Спортивные-штаны",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPhJ4W3JZEt2XqynY1o0V5Xw8iR1v4rOMywQ&s",
+        "image_type": 2,
+        "quantity": 10,
+        "state": "новый",
+        "price": 1499
+    },
+    {
+        "id": 16,
+        "name": "-",
+        "image": "",
+        "image_type": 0,
+        "quantity": 0,
+        "state": "сломан",
+        "price": 0
+    }
 ]

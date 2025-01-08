@@ -1,9 +1,10 @@
 {% extends 'base.html' %} {% block title %}Dashboard{% endblock %} {% block
 content %}
+
 <div class="dashboard-container">
   <h1>Dashboard</h1>
+
   <div class="menu">
-    <!-- Меню навигации -->
     <nav class="dashboard-nav">
       {% for page in pages %}
       <div
@@ -11,18 +12,19 @@ content %}
       >
         <button
           class="dashboard-button {% if menu == page.name %}active{% endif %}"
-          onclick="loadSubContent('{{page.name}}')"
+          onclick="loadSubContent('{{ page.name }}')"
         >
-          {{page.name}}
+          {{ page.name }}
         </button>
         {% if page.subpages %}
         <div class="dropdown-content">
           {% for subpage in page.subpages | sort(attribute='order') %}
           <a
             class="dashboard-subpage-button"
-            onclick="loadSubSubContent('{{page.name}}', '{{subpage.name}}')"
-            >{{ subpage.name }}</a
+            onclick="loadSubSubContent('{{ page.name }}', '{{ subpage.name }}')"
           >
+            {{ subpage.name }}
+          </a>
           {% endfor %}
         </div>
         {% endif %}
@@ -30,13 +32,12 @@ content %}
       {% endfor %}
     </nav>
   </div>
-  <script src="{{ url_for('static', filename='js/dashboard_menu.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/utils.js') }}"></script>
 
-  <div class="content">
-    <!-- Контент страницы -->
-  </div>
+  <div class="content">{% block dashboard_content %}{% endblock %}</div>
+
+  <script src="{{ url_for('static', filename='js/dashboard_menu.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_subpage/utils.js') }}"></script>
   <a href="{{ url_for('logout') }}">Logout</a>
 </div>
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

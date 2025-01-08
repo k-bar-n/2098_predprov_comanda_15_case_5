@@ -1,93 +1,93 @@
 {
-  "admin": [
-    {
-      "name": "inventory_management",
-      "subpages": [
+    "admin": [
         {
-          "name": "all_inventory",
-          "order": 1
+        "name": "inventory_management",
+        "subpages": [
+            {
+            "name": "all_inventory",
+            "order": 1
+            },
+            {
+            "name": "inventory_add_edit",
+            "order": 2
+            }
+        ]
         },
         {
-          "name": "inventory_add_edit",
-          "order": 2
-        }
-      ]
-    },
-    {
-      "name": "inventory_assignment",
-      "subpages": [
-        {
-          "name": "all_assignments",
-          "order": 1
+        "name": "inventory_assignment",
+        "subpages": [
+            {
+            "name": "all_assignments",
+            "order": 1
+            },
+            {
+            "name": "inventory_assignment_create",
+            "order": 2
+            }
+        ]
         },
         {
-          "name": "inventory_assignment_create",
-          "order": 2
-        }
-      ]
-    },
-    {
-      "name": "purchases_management",
-      "subpages": [
-        {
-          "name": "all_purchase_plans",
-          "order": 1
+        "name": "purchases_management",
+        "subpages": [
+            {
+            "name": "all_purchase_plans",
+            "order": 1
+            },
+            {
+            "name": "purchases_add_edit",
+            "order": 2
+            }
+        ]
         },
         {
-          "name": "purchases_add_edit",
-          "order": 2
-        }
-      ]
-    },
-    {
-      "name": "reports",
-      "subpages": [
-        {
-          "name": "all_inventory",
-          "order": 1
+        "name": "reports",
+        "subpages": [
+            {
+            "name": "all_inventory",
+            "order": 1
+            },
+            {
+            "name": "all_assignments",
+            "order": 2
+            },
+            {
+            "name": "all_purchases",
+            "order": 3
+            }
+        ]
         },
         {
-          "name": "all_assignments",
-          "order": 2
+        "name": "requests",
+        "subpages": [
+            {
+            "name": "request_create",
+            "order": 1
+            },
+            {
+            "name": "all_requests",
+            "order": 2
+            }
+        ]
+        }
+    ],
+    "user": [
+        {
+        "name": "inventory_management",
+        "subpages": [
+            {
+            "name": "all_inventory",
+            "order": 1
+            }
+        ]
         },
         {
-          "name": "all_purchases",
-          "order": 3
+        "name": "requests",
+        "subpages": [
+            {
+            "name": "request_create",
+            "order": 1
+            }
+        ]
         }
-      ]
-    },
-    {
-      "name": "requests",
-      "subpages": [
-        {
-          "name": "request_create",
-          "order": 1
-        },
-        {
-          "name": "all_requests",
-          "order": 2
-        }
-      ]
-    }
-  ],
-  "user": [
-    {
-      "name": "inventory_management",
-      "subpages": [
-        {
-          "name": "all_inventory",
-          "order": 1
-        }
-      ]
-    },
-    {
-      "name": "requests",
-      "subpages": [
-        {
-          "name": "request_create",
-          "order": 1
-        }
-      ]
-    }
-  ]
+    ]
 }

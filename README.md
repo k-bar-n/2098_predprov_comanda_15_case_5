@@ -427,7 +427,7 @@
 
 Этот план отражает текущее состояние проекта и определяет следующие шаги для его завершения в соответствии с поставленными требованиями.
 
---------
+---
 
 Вот так сейчас выглядит дерево проекта:
 
@@ -438,6 +438,7 @@
 |---key.pem
 |---main.py
 |---README.md
+|---soder.txt
 |---soder_script.py
 |---.git
 |---.idea
@@ -490,8 +491,9 @@
 |           |   |---all_purchase_plans.js
 |           |   `---purchases_add_edit.js
 |           |---reports
-|           |   |---all_assignments_and_purchases.js
-|           |   `---all_inventory.js
+|           |   |---all_assignments.js
+|           |   |---all_inventory.js
+|           |   `---all_purchases.js
 |           `---requests
 |               |---all_requests.js
 |               `---request_create.js
@@ -522,8 +524,9 @@
         |   |---all_purchase_plans.html
         |   `---purchases_add_edit.html
         |---reports
-        |   |---all_assignments_and_purchases.html
-        |   `---all_inventory.html
+        |   |---all_assignments.html
+        |   |---all_inventory.html
+        |   `---all_purchases.html
         `---requests
             |---all_requests.html
             `---request_create.html

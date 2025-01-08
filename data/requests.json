@@ -1,92 +1,92 @@
 [
-  {
-    "id": 1,
-    "user_id": 2,
-    "inventory_id": 1,
-    "quantity_requested": 1,
-    "status": "pending",
-    "request_type": "get",
-    "request_date": "2025-01-05"
-  },
-  {
-    "id": 2,
-    "user_id": 3,
-    "inventory_id": 3,
-    "quantity_requested": 2,
-    "status": "approved",
-    "request_type": "repair",
-    "request_date": "2025-01-05"
-  },
-  {
-    "id": 3,
-    "user_id": 2,
-    "inventory_id": 5,
-    "quantity_requested": 1,
-    "status": "pending",
-    "request_type": "replace",
-    "request_date": "2025-01-06"
-  },
-  {
-    "id": 4,
-    "user_id": 1,
-    "inventory_id": 2,
-    "quantity_requested": 3,
-    "status": "approved",
-    "request_type": "get",
-    "request_date": "2025-01-06"
-  },
-  {
-    "id": 5,
-    "user_id": 3,
-    "inventory_id": 4,
-    "quantity_requested": 1,
-    "status": "rejected",
-    "request_type": "repair",
-    "request_date": "2025-01-07"
-  },
-  {
-    "id": 6,
-    "user_id": 2,
-    "inventory_id": 6,
-    "quantity_requested": 2,
-    "status": "pending",
-    "request_type": "get",
-    "request_date": "2025-01-07"
-  },
-  {
-    "id": 7,
-    "user_id": 3,
-    "inventory_id": 7,
-    "quantity_requested": 1,
-    "status": "approved",
-    "request_type": "replace",
-    "request_date": "2025-01-08"
-  },
-  {
-    "id": 8,
-    "user_id": 1,
-    "inventory_id": 8,
-    "quantity_requested": 2,
-    "status": "rejected",
-    "request_type": "repair",
-    "request_date": "2025-01-08"
-  },
-  {
-    "id": 9,
-    "user_id": 2,
-    "inventory_id": 9,
-    "quantity_requested": 1,
-    "status": "pending",
-    "request_type": "get",
-    "request_date": "2025-01-09"
-  },
-  {
-    "id": 10,
-    "user_id": 3,
-    "inventory_id": 10,
-    "quantity_requested": 1,
-    "status": "approved",
-    "request_type": "replace",
-    "request_date": "2025-01-09"
-  }
+    {
+        "id": 1,
+        "user_id": 2,
+        "inventory_id": 1,
+        "quantity_requested": 1,
+        "status": "pending",
+        "request_type": "get",
+        "request_date": "2025-01-05"
+    },
+    {
+        "id": 2,
+        "user_id": 3,
+        "inventory_id": 3,
+        "quantity_requested": 2,
+        "status": "approved",
+        "request_type": "repair",
+        "request_date": "2025-01-05"
+    },
+    {
+        "id": 3,
+        "user_id": 2,
+        "inventory_id": 5,
+        "quantity_requested": 1,
+        "status": "pending",
+        "request_type": "replace",
+        "request_date": "2025-01-06"
+    },
+    {
+        "id": 4,
+        "user_id": 1,
+        "inventory_id": 2,
+        "quantity_requested": 3,
+        "status": "approved",
+        "request_type": "get",
+        "request_date": "2025-01-06"
+    },
+    {
+        "id": 5,
+        "user_id": 3,
+        "inventory_id": 4,
+        "quantity_requested": 1,
+        "status": "rejected",
+        "request_type": "repair",
+        "request_date": "2025-01-07"
+    },
+    {
+        "id": 6,
+        "user_id": 2,
+        "inventory_id": 6,
+        "quantity_requested": 2,
+        "status": "pending",
+        "request_type": "get",
+        "request_date": "2025-01-07"
+    },
+    {
+        "id": 7,
+        "user_id": 3,
+        "inventory_id": 7,
+        "quantity_requested": 1,
+        "status": "approved",
+        "request_type": "replace",
+        "request_date": "2025-01-08"
+    },
+    {
+        "id": 8,
+        "user_id": 1,
+        "inventory_id": 8,
+        "quantity_requested": 2,
+        "status": "rejected",
+        "request_type": "repair",
+        "request_date": "2025-01-08"
+    },
+    {
+        "id": 9,
+        "user_id": 2,
+        "inventory_id": 9,
+        "quantity_requested": 1,
+        "status": "pending",
+        "request_type": "get",
+        "request_date": "2025-01-09"
+    },
+    {
+        "id": 10,
+        "user_id": 3,
+        "inventory_id": 10,
+        "quantity_requested": 1,
+        "status": "approved",
+        "request_type": "replace",
+        "request_date": "2025-01-09"
+    }
 ]

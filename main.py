@@ -139,13 +139,36 @@ def dashboard():
             if user['username'] == session['username']:
                 session['role'] = user['role']
         menu = request.args.get('menu')
+        subpage = request.args.get('subpage')
+
         user_pages_settings = load_json('user_pages_settings.json')
         pages = user_pages_settings.get(session['role'], [])
 
-        if session['role'] == 'user':
-            if menu not in ['requests', None, 'inventory_management']:
-                return redirect(url_for('dashboard'))
-        return render_template('dashboard/dashboard.html', menu=menu, pages=pages)
+        # Проверка доступности страницы для текущей роли
+        allowed_menus = [page['name'] for page in pages]
+        if menu not in allowed_menus:
+            if session['role'] == 'admin':
+                if menu is not None and menu != '':
+                    return "Страница не найдена", 404
+                menu = pages[0]["name"]
+            else:
+                if menu is not None and menu != '':
+                    return "Страница не найдена", 404
+                menu = pages[0]["name"]
+
+        # Определение шаблона для рендеринга
+        template = 'dashboard/dashboard.html'  # Шаблон по умолчанию
+
+        if menu:
+            if any(page['name'] == menu for page in pages):
+                if subpage and any(sp['name'] == subpage for sp in next((p['subpages'] for p in pages if p['name'] == menu), [])):
+                    template = f"dashboard_subsubpage/{menu}/{subpage}.html"
+                else:
+                    template = f"dashboard_subsubpage/{menu}/{next((sp['name'] for sp in next(
+                        (p['subpages'] for p in pages if p['name'] == menu), [])), None)}.html"
+
+        return render_template(template, menu=menu, pages=pages, subpage=subpage)
+
     return redirect(url_for('signin'))
 
 

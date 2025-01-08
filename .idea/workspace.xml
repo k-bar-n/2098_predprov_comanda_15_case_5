@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f580404a-9264-4da0-a802-6404d55b2648" name="Changes" comment="" />
+    <list default="true" id="f580404a-9264-4da0-a802-6404d55b2648" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/soder_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/soder_script.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/all_inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/all_inventory.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_inventory.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_inventory.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_inventory.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

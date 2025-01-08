@@ -1,10 +1,11 @@
 function loadAllInventory() {
     const allInventory = document.getElementById("all_inventory");
     const errorMessage = document.getElementById('error-message-inventory');
+    const productContainer = document.getElementById("productContainer");
+    productContainer.innerHTML = "";
     fetch('/dashboard/get_all_inventory')
         .then((response) => response.json())
         .then((data) => {
-            allInventory.innerHTML = ""; // Очищаем контейнер
             data.forEach((product) => {
                 const productDiv = document.createElement("div");
                 productDiv.classList.add("product");
@@ -29,7 +30,7 @@ function loadAllInventory() {
                           Удалить
                       </button>
                                   `;
-                allInventory.appendChild(productDiv);
+                productContainer.appendChild(productDiv);
             });
         })
         .catch((error) => {

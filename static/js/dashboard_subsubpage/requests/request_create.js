@@ -1,6 +1,7 @@
-document.addEventListener('DOMContentLoaded', function () {
+function initRequestCreate() {
     const createRequestForm = document.getElementById('create-request-form');
     const errorMessage = document.getElementById('error-message-requests');
+
 
     if (createRequestForm) {
         createRequestForm.addEventListener('submit', function (e) {
@@ -34,4 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+}
+document.addEventListener('DOMContentLoaded', function () {
+    initRequestCreate()
 });

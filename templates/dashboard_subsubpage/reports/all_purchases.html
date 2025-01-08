@@ -1,6 +1,8 @@
+{% extends 'dashboard/dashboard.html' %} {% block dashboard_content %}
 <div class="reports_container">
   <h3>Список планов закупок</h3>
   <div id="all_purchase_plans_reports"></div>
 </div>
 <div id="error-message-reports" class="error-message"></div>
 <script src="{{ url_for('static', filename='js/dashboard_subsubpage/reports/all_purchases.js') }}"></script>
+{% endblock %}

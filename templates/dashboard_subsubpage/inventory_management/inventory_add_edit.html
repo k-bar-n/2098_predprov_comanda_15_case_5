@@ -1,3 +1,4 @@
+{% extends 'dashboard/dashboard.html' %} {% block dashboard_content %}
 <h2>Управление инвентарем</h2>
 <div class="add-edit-form">
   <h3>Добавить/Изменить предмет</h3>
@@ -31,3 +32,4 @@
 </div>
 <div id="error-message-inventory" class="error-message"></div>
 <script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_management/inventory_add_edit.js') }}"></script>
+{% endblock %}

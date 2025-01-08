@@ -1,6 +1,8 @@
+{% extends 'dashboard/dashboard.html' %} {% block dashboard_content %}
 <div class="all_inventory_container">
-  <h3>Весь инвентарь</h3>
-  <div id="productContainer"></div>
-  <ul id="all_inventory"></ul>
+  <h3>Список всего инвентаря с указанием количества и состояния</h3>
+  <div id="all_inventory_reports"></div>
 </div>
-<div id="error-message-inventory" class="error-message"></div>
+<div id="error-message-reports" class="error-message"></div>
+<script src="{{ url_for('static', filename='js/dashboard_subsubpage/reports/all_inventory.js') }}"></script>
+{% endblock %}

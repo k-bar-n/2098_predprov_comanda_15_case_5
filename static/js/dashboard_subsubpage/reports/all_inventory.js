@@ -2,6 +2,11 @@ function loadAllInventoryForReport() {
     const allInventoryReports = document.getElementById("all_inventory_reports");
     const errorMessage = document.getElementById('error-message-reports');
 
+    if (!allInventoryReports) {
+        console.error("Элемент с id 'all_inventory_reports' не найден.");
+        return;
+    }
+
     fetch('/dashboard/get_all_inventory_for_report')
         .then((response) => response.json())
         .then((data) => {

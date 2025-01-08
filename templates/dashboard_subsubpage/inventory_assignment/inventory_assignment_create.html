@@ -1,3 +1,4 @@
+{% extends 'dashboard/dashboard.html' %} {% block dashboard_content %}
 <div class="add-edit-form">
   <h3>Закрепить инвентарь за пользователем</h3>
   <form id="assign-inventory-form" method="post">
@@ -24,3 +25,4 @@
 </div>
 <div id="error-message-assignments" class="error-message"></div>
 <script src="{{ url_for('static', filename='js/dashboard_subsubpage/inventory_assignment/inventory_assignment_create.js') }}"></script>
+{% endblock %}

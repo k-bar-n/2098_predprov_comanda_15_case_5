@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+function initInventoryAssignmentCreate() {
     const assignInventoryForm = document.getElementById('assign-inventory-form');
     const errorMessage = document.getElementById('error-message-assignments');
 
@@ -36,4 +36,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initInventoryAssignmentCreate();
 });
