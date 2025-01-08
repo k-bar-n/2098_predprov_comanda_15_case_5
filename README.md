@@ -437,8 +437,8 @@
 |---cert.pem
 |---key.pem
 |---main.py
+|---Podrobnoye_opisaniye_kazhdogo_fayla_i_papki_v_proyekte.txt
 |---README.md
-|---soder.txt
 |---soder_script.py
 |---.git
 |---.idea
@@ -474,8 +474,8 @@
 |       |---authorization__sign_in.js
 |       |---cart_and_filter.js
 |       |---dashboard.js
+|       |---dashboard_main.js
 |       |---dashboard_menu.js
-|       |---magazine.js
 |       |---register__sign_up.js
 |       |---requests.js
 |       |---dashboard_subpage
@@ -501,12 +501,12 @@
     |---404.html
     |---admin_error.html
     |---base.html
-    |---magazine.html
     |---register__sign_up.html
     |---sign_in.html
     |---user_error.html
     |---dashboard
-    |   `---dashboard.html
+    |   |---dashboard.html
+    |   `---main_dashboard.html
     |---dashboard_subpage
     |   |---inventory_assignment.html
     |   |---inventory_management.html

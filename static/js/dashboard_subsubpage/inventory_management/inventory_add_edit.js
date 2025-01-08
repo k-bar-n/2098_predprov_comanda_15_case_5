@@ -34,44 +34,37 @@ function initInventoryAddEdit() {
         addEditInventoryForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(addEditInventoryForm);
+            const xhr = new XMLHttpRequest();
+            let url = '/dashboard/inventory_add'
             const jsonData = {};
             formData.forEach((value, key) => {
                 jsonData[key] = value;
             });
-            const image_type = document.getElementById("image_type_edit").value
-            let url = '/dashboard/inventory_add'
             if (jsonData['edit-id']) {
                 url = '/dashboard/inventory_edit'
             }
-
-            fetch(url, {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => {
-                    if (response.ok) {
-                        clearErrorMessage();
-                        addEditInventoryForm.reset();
-                        imageInputEdit.innerHTML = "";
-                        updateImageInput(imageTypeEdit, imageInputEdit);
-                        loadAllInventory();
-                    } else {
-                        response.text().then(text => {
-                            showErrorMessage(text, errorMessage);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    showErrorMessage(
-                        'Произошла ошибка при отправке данных',
-                        errorMessage
-                    );
-                });
+            xhr.open('POST', url, false);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    clearErrorMessage("error-message-inventory");
+                    addEditInventoryForm.reset();
+                    imageInputEdit.innerHTML = "";
+                    updateImageInput(imageTypeEdit, imageInputEdit);
+                    loadAllInventory();
+                } else {
+                    showErrorMessage(xhr.responseText, errorMessage);
+                }
+            };
+            xhr.onerror = function () {
+                showErrorMessage(
+                    'Произошла ошибка при отправке данных',
+                    errorMessage
+                );
+            };
+            xhr.send(formData);
         });
     }
 }
-
 document.addEventListener('DOMContentLoaded', function () {
     initInventoryAddEdit()
 });

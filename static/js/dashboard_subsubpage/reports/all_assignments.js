@@ -1,15 +1,14 @@
 function loadAllAssignmentsForReport() {
     const allAssignmentsReports = document.getElementById("all_assignments_reports");
     const errorMessage = document.getElementById('error-message-reports');
-
-    fetch('/dashboard/get_all_assignments_for_report')
-        .then((response) => response.json())
-        .then((data) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/dashboard/get_all_assignments_for_report', false);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
             allAssignmentsReports.innerHTML = "";
+            const data = JSON.parse(xhr.responseText);
             const table = document.createElement('table');
             table.classList.add('report-table');
-
-            // Заголовки таблицы
             let thead = document.createElement('thead');
             let headerRow = document.createElement('tr');
             ['ID', 'User ID', 'Inventory ID', 'Количество', 'Дата назначения'].forEach(text => {
@@ -19,8 +18,6 @@ function loadAllAssignmentsForReport() {
             });
             thead.appendChild(headerRow);
             table.appendChild(thead);
-
-            // Тело таблицы
             let tbody = document.createElement('tbody');
             data.forEach(assignment => {
                 let row = document.createElement('tr');
@@ -32,16 +29,13 @@ function loadAllAssignmentsForReport() {
                 tbody.appendChild(row);
             });
             table.appendChild(tbody);
-
             allAssignmentsReports.appendChild(table);
-
-
-        })
-        .catch((error) => {
-            console.error("Ошибка при загрузке отчета: ", error);
-            showErrorMessage(
-                'Произошла ошибка при загрузке данных',
-                errorMessage
-            );
-        });
+        } else {
+            showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+        }
+    };
+    xhr.onerror = function () {
+        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+    };
+    xhr.send();
 }

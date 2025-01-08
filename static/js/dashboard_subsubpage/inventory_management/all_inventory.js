@@ -3,9 +3,11 @@ function loadAllInventory() {
     const errorMessage = document.getElementById('error-message-inventory');
     const productContainer = document.getElementById("productContainer");
     productContainer.innerHTML = "";
-    fetch('/dashboard/get_all_inventory')
-        .then((response) => response.json())
-        .then((data) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/dashboard/get_all_inventory', false);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
             data.forEach((product) => {
                 const productDiv = document.createElement("div");
                 productDiv.classList.add("product");
@@ -22,53 +24,46 @@ function loadAllInventory() {
                       ${image_element}
                       <h2>${product.name}</h2>
                       <p>ID: ${product.id}</p>
-                      <p>Цена: ${product.price} руб.</p>
                       <p>Количество: ${product.quantity}</p>
                       <p>Состояние: ${product.state}</p>
                       <p>Тип изображения: ${product.image_type}</p>
-                        <button onclick="deleteInventory(${product.id})" class = "magazine-button">
-                          Удалить
-                      </button>
+                        ${sessionStorage.getItem('role') === 'admin' ? `<button onclick="confirmDelete(${product.id})" class = "inventory-delete-button">Удалить</button>` : ''}
                                   `;
                 productContainer.appendChild(productDiv);
             });
-        })
-        .catch((error) => {
-            console.error('Ошибка:', error);
-            showErrorMessage(
-                'Произошла ошибка при загрузке данных',
-                errorMessage
-            );
-        });
+        } else {
+            showErrorMessage('Ошибка при загрузке данных', errorMessage);
+        }
+    };
+    xhr.onerror = function () {
+        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+    };
+    xhr.send();
+}
+
+function confirmDelete(inventoryId) {
+    if (confirm("Вы уверены, что хотите удалить этот предмет инвентаря?")) {
+        deleteInventory(inventoryId);
+    }
 }
 
 function deleteInventory(inventoryId) {
     const errorMessage = document.getElementById('error-message-inventory');
-
-    fetch('/dashboard/inventory_delete', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                inventory_id: inventoryId
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                clearErrorMessage();
-                loadAllInventory(); // Перезагрузка списка после удаления
-            } else {
-                response.text().then(text => {
-                    showErrorMessage(text, errorMessage);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            showErrorMessage(
-                'Произошла ошибка при удалении данных',
-                errorMessage
-            );
-        });
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/dashboard/inventory_delete', false);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            clearErrorMessage("error-message-inventory");
+            loadAllInventory();
+        } else {
+            showErrorMessage(xhr.responseText, errorMessage);
+        }
+    };
+    xhr.onerror = function () {
+        showErrorMessage('Произошла ошибка при удалении данных', errorMessage);
+    };
+    xhr.send(JSON.stringify({
+        inventory_id: inventoryId
+    }));
 }

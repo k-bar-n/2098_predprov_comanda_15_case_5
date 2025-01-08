@@ -1,0 +1,8 @@
+{% extends 'dashboard/dashboard.html' %} {% block dashboard_content %} {% if
+role == 'admin' %}
+<h1>Добро пожаловать, {{ username }}!</h1>
+<p>Вы можете управлять инвентарем, назначениями, закупками и отчетами.</p>
+{% elif role == 'user' %}
+<h1>Добро пожаловать, {{ username }}!</h1>
+<p>Вы можете просматривать инвентарь и отправлять запросы.</p>
+{% endif %} {% endblock %}

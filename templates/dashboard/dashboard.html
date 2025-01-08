@@ -11,17 +11,20 @@ content %}
         class="dashboard-menu-item {% if not page.subpages %}disabled{% endif %}"
       >
         <button
-          class="dashboard-button {% if menu == page.name %}active{% endif %}"
-          onclick="loadSubContent('{{ page.name }}')"
+          class="dashboard-button {% if menu == page.name or (menu is none and subpage is none and page.name == 'main') %} active {% endif %}"
+          data-menu="{{ page.name }}"
         >
           {{ page.name }}
         </button>
+
         {% if page.subpages %}
         <div class="dropdown-content">
           {% for subpage in page.subpages | sort(attribute='order') %}
           <a
             class="dashboard-subpage-button"
-            onclick="loadSubSubContent('{{ page.name }}', '{{ subpage.name }}')"
+            data-menu="{{ page.name }}"
+            data-subpage="{{ subpage.name }}"
+            href="/dashboard?menu={{ page.name }}&subpage={{ subpage.name }}"
           >
             {{ subpage.name }}
           </a>
@@ -35,9 +38,7 @@ content %}
 
   <div class="content">{% block dashboard_content %}{% endblock %}</div>
 
-  <script src="{{ url_for('static', filename='js/dashboard_menu.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard_subpage/utils.js') }}"></script>
   <a href="{{ url_for('logout') }}">Logout</a>
 </div>
 {% endblock %}

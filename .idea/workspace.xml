@@ -5,12 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f580404a-9264-4da0-a802-6404d55b2648" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/inventory.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/inventory.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/user_pages_settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/user_pages_settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/users.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/soder_script.py" beforeDir="false" afterPath="$PROJECT_DIR$/soder_script.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/dashboard.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subpage/utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subpage/utils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_assignment/inventory_assignment_create.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_assignment/inventory_assignment_create.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/all_inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/all_inventory.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/inventory_add_edit.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/inventory_management/inventory_add_edit.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/purchases_management/purchases_add_edit.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/purchases_management/purchases_add_edit.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_inventory.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/reports/all_inventory.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_inventory.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/reports/all_inventory.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/requests/all_requests.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/requests/all_requests.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/dashboard_subsubpage/requests/request_create.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/dashboard_subsubpage/requests/request_create.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/magazine.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/dashboard/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_management/inventory_add_edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/dashboard_subsubpage/inventory_management/inventory_add_edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/magazine.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

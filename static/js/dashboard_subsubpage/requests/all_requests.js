@@ -1,10 +1,12 @@
 function loadAllRequests() {
     const allRequests = document.getElementById("all_requests");
     const errorMessage = document.getElementById('error-message-requests');
-    fetch('/dashboard/get_all_requests')
-        .then((response) => response.json())
-        .then((data) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/dashboard/get_all_requests', false);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
             allRequests.innerHTML = "";
+            const data = JSON.parse(xhr.responseText);
             data.forEach((request) => {
                 const listItem = document.createElement("li");
                 listItem.innerHTML = `
@@ -27,43 +29,34 @@ function loadAllRequests() {
                         `;
                 allRequests.appendChild(listItem);
             });
-        })
-        .catch((error) => {
-            console.error('Ошибка:', error);
-            showErrorMessage(
-                'Произошла ошибка при загрузке данных',
-                errorMessage
-            );
-        });
+        } else {
+            showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+        }
+    };
+    xhr.onerror = function () {
+        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+    };
+    xhr.send();
 }
 
 function updateRequestStatus(requestId, status) {
     const errorMessage = document.getElementById('error-message-requests');
-    fetch('/dashboard/request_update_status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                request_id: requestId,
-                status: status
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                clearErrorMessage();
-                loadAllRequests(); // Перезагрузка списка после изменения статуса
-            } else {
-                response.text().then(text => {
-                    showErrorMessage(text, errorMessage);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            showErrorMessage(
-                'Произошла ошибка при изменении статуса данных',
-                errorMessage
-            );
-        });
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/dashboard/request_update_status', false);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            clearErrorMessage("error-message-requests");
+            loadAllRequests();
+        } else {
+            showErrorMessage(xhr.responseText, errorMessage);
+        }
+    };
+    xhr.onerror = function () {
+        showErrorMessage('Произошла ошибка при изменении статуса данных', errorMessage);
+    };
+    xhr.send(JSON.stringify({
+        request_id: requestId,
+        status: status
+    }));
 }

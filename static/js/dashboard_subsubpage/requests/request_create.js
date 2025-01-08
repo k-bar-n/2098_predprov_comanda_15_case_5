@@ -2,37 +2,27 @@ function initRequestCreate() {
     const createRequestForm = document.getElementById('create-request-form');
     const errorMessage = document.getElementById('error-message-requests');
 
-
     if (createRequestForm) {
         createRequestForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(createRequestForm);
             const jsonData = Object.fromEntries(formData.entries());
-            fetch('/dashboard/request_create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(jsonData),
-                })
-                .then(response => {
-                    if (response.ok) {
-                        clearErrorMessage();
-                        loadAllRequests();
-                        createRequestForm.reset();
-                    } else {
-                        response.text().then(text => {
-                            showErrorMessage(text, errorMessage);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    showErrorMessage(
-                        'Произошла ошибка при отправке данных',
-                        errorMessage
-                    );
-                });
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/dashboard/request_create', false);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    clearErrorMessage("error-message-requests");
+                    loadAllRequests();
+                    createRequestForm.reset();
+                } else {
+                    showErrorMessage(xhr.responseText, errorMessage);
+                }
+            };
+            xhr.onerror = function () {
+                showErrorMessage('Произошла ошибка при отправке данных', errorMessage);
+            };
+            xhr.send(JSON.stringify(jsonData));
         });
     }
 }

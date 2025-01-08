@@ -8,32 +8,22 @@ function initInventoryAssignmentCreate() {
             e.preventDefault();
             const formData = new FormData(assignInventoryForm);
             const jsonData = Object.fromEntries(formData.entries());
-
-            fetch('/dashboard/assign_inventory', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(jsonData),
-                })
-                .then(response => {
-                    if (response.ok) {
-                        clearErrorMessage();
-                        loadAllAssignments();
-                        assignInventoryForm.reset();
-                    } else {
-                        response.text().then(text => {
-                            showErrorMessage(text, errorMessage);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    showErrorMessage(
-                        'Произошла ошибка при отправке данных',
-                        errorMessage
-                    );
-                });
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/dashboard/assign_inventory', false);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    clearErrorMessage("error-message-assignments");
+                    loadAllAssignments();
+                    assignInventoryForm.reset();
+                } else {
+                    showErrorMessage(xhr.responseText, errorMessage);
+                }
+            };
+            xhr.onerror = function () {
+                showErrorMessage('Произошла ошибка при отправке данных', errorMessage);
+            };
+            xhr.send(JSON.stringify(jsonData));
         });
     }
 }

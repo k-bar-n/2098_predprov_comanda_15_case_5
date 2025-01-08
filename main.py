@@ -47,11 +47,6 @@ def index():
     return redirect(url_for('signin'))
 
 
-@app.route('/magazine')
-def magazine():
-    return render_template('magazine.html')
-
-
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
@@ -157,54 +152,36 @@ def dashboard():
                 menu = pages[0]["name"]
 
         # Определение шаблона для рендеринга
-        template = 'dashboard/dashboard.html'  # Шаблон по умолчанию
-
-        if menu:
+        # Определение шаблона для рендеринга
+        if menu is None and subpage is None:  # Главная страница дашборда
+            template = 'dashboard/main_dashboard.html'  # Шаблон для главной страницы
+        elif menu:  # Остальные страницы дашборда
             if any(page['name'] == menu for page in pages):
                 if subpage and any(sp['name'] == subpage for sp in next((p['subpages'] for p in pages if p['name'] == menu), [])):
                     template = f"dashboard_subsubpage/{menu}/{subpage}.html"
-                else:
+                # Проверка наличия подстраниц у пункта меню
+                elif any(p.get('subpages') for p in pages if p['name'] == menu):
                     template = f"dashboard_subsubpage/{menu}/{next((sp['name'] for sp in next(
                         (p['subpages'] for p in pages if p['name'] == menu), [])), None)}.html"
+                else:  # Если подстраниц нет, отображаем страницу меню
+                    template = 'dashboard/main_dashboard.html'  # или любой другой подходящий шаблон
+        else:  # Если menu или subpage не существуют - 404
+            return "Страница не найдена", 404
 
-        return render_template(template, menu=menu, pages=pages, subpage=subpage)
+        return render_template(template, menu=menu, pages=pages, subpage=subpage, username=session['username'], role=session['role'])
 
     return redirect(url_for('signin'))
 
 
-@app.route('/dashboard/load_page')
-def load_subpage():
-    menu = request.args.get('menu')
-    subpage = request.args.get('subpage')
-    print(f"Загрузка subpage: menu={menu}, subpage={subpage}")
-    if menu == "inventory_management":
-        if subpage == "inventory_add_edit":
-            return render_template('dashboard_subsubpage/inventory_management/inventory_add_edit.html')
-        elif subpage == "all_inventory":
-            return render_template('dashboard_subsubpage/inventory_management/all_inventory.html')
-    elif menu == "inventory_assignment":
-        if subpage == "inventory_assignment_create":
-            return render_template('dashboard_subsubpage/inventory_assignment/inventory_assignment_create.html')
-        elif subpage == "all_assignments":
-            return render_template('dashboard_subsubpage/inventory_assignment/all_assignments.html')
-    elif menu == "purchases_management":
-        if subpage == "purchases_add_edit":
-            return render_template('dashboard_subsubpage/purchases_management/purchases_add_edit.html')
-        elif subpage == "all_purchase_plans":
-            return render_template('dashboard_subsubpage/purchases_management/all_purchase_plans.html')
-    elif menu == "reports":
-        if subpage == "all_inventory":
-            return render_template('dashboard_subsubpage/reports/all_inventory.html')
-        elif subpage == "all_assignments":
-            return render_template('dashboard_subsubpage/reports/all_assignments.html')
-        elif subpage == "all_purchases":
-            return render_template('dashboard_subsubpage/reports/all_purchases.html')
-    elif menu == "requests":
-        if subpage == "all_requests":
-            return render_template('dashboard_subsubpage/requests/all_requests.html')
-        if subpage == "request_create":
-            return render_template('dashboard_subsubpage/requests/request_create.html')
-    return "Страница не найдена", 404
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if 'username' in session:
+        if session['role'] == 'admin':
+            return render_template('admin_error.html', error=str(e)), 500
+        else:
+            return render_template('user_error.html', error=str(e)), 500
+    else:
+        return render_template('user_error.html', error="Произошла неизвестная ошибка, пожалуйста, авторизуйтесь."), 500
 
 
 # Маршруты для inventory
@@ -234,7 +211,7 @@ def inventory_add():
             'quantity': int(data['quantity']),
             'state': data['state'],
             'image_type': image_type,
-            'price': int(data['price']),
+            # 'price': int(data['price']),
         }
         inventory.append(new_inventory)
         save_json('inventory.json', inventory)
@@ -271,7 +248,7 @@ def inventory_edit():
                 item['quantity'] = int(data['edit-quantity'])
                 item['state'] = data['edit-state']
                 item['image_type'] = image_type
-                item['price'] = int(data['edit-price'])
+                # item['price'] = int(data['edit-price'])
                 break
         save_json('inventory.json', inventory)
         return '', 200
@@ -291,8 +268,11 @@ def inventory_delete():
         save_json('inventory.json', updated_inventory)
         return '', 200
     except Exception as e:
-        print(e)
-        return "Ошибка удаления инвентаря", 500
+        print(f"Ошибка удаления инвентаря: {e}")
+        if session.get('role') == 'admin':
+            return f"Ошибка удаления инвентаря: {e}", 500
+        else:
+            return "Ошибка удаления инвентаря", 500
 
 
 @app.route('/dashboard/get_all_inventory')
@@ -501,14 +481,6 @@ def logout():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
-
-@app.errorhandler(Exception)
-def handle_exception(e):
-    if 'session_username' in session and session['role'] == 'admin':
-        return render_template('admin_error.html', error=str(e)), 500
-    else:
-        return render_template('user_error.html'), 500
 
 
 if __name__ == "__main__":

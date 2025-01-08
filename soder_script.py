@@ -100,7 +100,8 @@ if __name__ == "__main__":
         "static/images",
         "COPYRIGHT.txt",
         "GOST_Type_A.ttf",
-        "soder_script.py"
+        "soder_script.py",
+        "Podrobnoye_opisaniye_kazhdogo_fayla_i_papki_v_proyekte.txt"
     ]
 
     file_paths = get_file_paths(

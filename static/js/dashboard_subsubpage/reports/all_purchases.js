@@ -1,15 +1,14 @@
 function loadAllPurchasesForReport() {
     const allPurchasePlansReports = document.getElementById("all_purchase_plans_reports");
     const errorMessage = document.getElementById('error-message-reports');
-
-    fetch('/dashboard/get_all_purchases_for_report')
-        .then((response) => response.json())
-        .then((data) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/dashboard/get_all_purchases_for_report', false);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
             allPurchasePlansReports.innerHTML = "";
+            const data = JSON.parse(xhr.responseText);
             const table = document.createElement('table');
             table.classList.add('report-table');
-
-            // Заголовки таблицы
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
             ['ID', 'Inventory ID', 'Количество', 'Цена', 'Поставщик'].forEach(text => {
@@ -19,8 +18,6 @@ function loadAllPurchasesForReport() {
             });
             thead.appendChild(headerRow);
             table.appendChild(thead);
-
-            // Тело таблицы
             const tbody = document.createElement('tbody');
             data.forEach(purchase => {
                 const row = document.createElement('tr');
@@ -32,15 +29,13 @@ function loadAllPurchasesForReport() {
                 tbody.appendChild(row);
             });
             table.appendChild(tbody);
-
-
             allPurchasePlansReports.appendChild(table);
-        })
-        .catch((error) => {
-            console.error("Ошибка при загрузке отчета: ", error);
-            showErrorMessage(
-                'Произошла ошибка при загрузке данных',
-                errorMessage
-            );
-        });
+        } else {
+            showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+        }
+    };
+    xhr.onerror = function () {
+        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
+    };
+    xhr.send();
 }
