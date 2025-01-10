@@ -1,21 +1,14 @@
-<div class="requests_container">
+<div class="content">
   <nav class="dashboard-nav">
-    <button
-      class="dashboard-button"
-      onclick="loadSubSubContent('requests', 'all_requests')"
+    {% for subpage in pages | selectattr('name', 'equalto', menu) |
+    map(attribute='subpages') | list | first | sort(attribute='order') %}
+
+    <a
+      href="/dashboard?menu={{ menu }}&subpage={{ subpage.name }}&subsubpage={{ subpage.name }}"
+      class="dashboard-button {% if subsubpage == subpage.name %} active {% endif %}"
+      >{{ subpage.name }}</a
     >
-      Все заявки
-    </button>
-    {% if session['role'] == 'admin' %}
-    <button
-      class="dashboard-button"
-      onclick="loadSubSubContent('requests', 'request_create')"
-    >
-      Создать заявку
-    </button>
-    {% endif %}
+
+    {% endfor %}
   </nav>
-  <div class="content"></div>
 </div>
-<script src="{{ url_for('static', filename='js/cart_and_filter.js') }}"></script>
-<script src="{{ url_for('static', filename='js/requests.js') }}"></script>

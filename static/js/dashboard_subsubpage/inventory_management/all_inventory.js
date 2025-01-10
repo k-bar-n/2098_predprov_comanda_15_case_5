@@ -5,7 +5,7 @@ function loadAllInventory() {
     productContainer.innerHTML = "";
     const xhr = new XMLHttpRequest();
     xhr.open('GET', '/dashboard/get_all_inventory', false);
-    xhr.onload = function () {
+    xhr.onload = function() {
         if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
             data.forEach((product) => {
@@ -13,8 +13,7 @@ function loadAllInventory() {
                 productDiv.classList.add("product");
                 let image_element = "";
                 if (product.image_type == "0") {
-                    image_element =
-                        '<img src="/static/images/no_image.png" alt="No Image" class="imgl" />';
+                    image_element = '<img src="/static/images/no_image.png" alt="No Image" class="imgl" />';
                 } else if (product.image_type == "1") {
                     image_element = `<img src="/static/images/${product.image}" alt="${product.name}" class="imgl" />`;
                 } else if (product.image_type == "2") {
@@ -27,8 +26,8 @@ function loadAllInventory() {
                       <p>Количество: ${product.quantity}</p>
                       <p>Состояние: ${product.state}</p>
                       <p>Тип изображения: ${product.image_type}</p>
-                        ${sessionStorage.getItem('role') === 'admin' ? `<button onclick="confirmDelete(${product.id})" class = "inventory-delete-button">Удалить</button>` : ''}
-                                  `;
+                       ${role === 'admin' ? `<button onclick="confirmDelete(${product.id})" class = "inventory-delete-button">Удалить</button>` : ''}
+                                  `; // Используем глобальную переменную role
                 productContainer.appendChild(productDiv);
             });
         } else {

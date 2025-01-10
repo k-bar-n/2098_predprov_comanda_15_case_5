@@ -1,4 +1,5 @@
 {% extends 'dashboard/dashboard.html' %} {% block dashboard_content %}
+
 <div class="add-edit-form">
   <h3>Создать заявку</h3>
   <form id="create-request-form" method="post">
@@ -24,4 +25,5 @@
 </div>
 <div id="error-message-requests" class="error-message"></div>
 <script src="{{ url_for('static', filename='js/dashboard_subsubpage/requests/request_create.js') }}"></script>
+
 {% endblock %}

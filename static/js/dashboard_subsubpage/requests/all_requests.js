@@ -16,7 +16,7 @@ function loadAllRequests() {
                        Тип заявки: ${request.request_type},
                        Статус: ${request.status},
                        Дата запроса: ${request.request_date}
-                         ${sessionStorage.getItem('role') === 'admin' ?
+                         ${role === 'admin' ? // Используем глобальную переменную role
                          `<div class="dropdown">
                                 <button class="dashboard-button">Изменить статус</button>
                                 <div class="dropdown-content">

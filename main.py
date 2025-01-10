@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, url_for, session, Response, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, Response, make_response, jsonify
 from werkzeug.utils import secure_filename
 import os
 import datetime
@@ -61,19 +61,18 @@ def signin():
                     session['username'] = username
                     session['role'] = user['role']
 
-                    # Получаем текущее время
                     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    # Обновляем last_login в users.json
                     for user in users:
                         if user['username'] == username:
                             user['last_login'] = now
                             break
                     save_json('users.json', users)
 
-                    # Устанавливаем Cookie
                     response = make_response(redirect(url_for('dashboard')))
                     response.set_cookie(
                         'session_username', username, httponly=True, secure=True, samesite='Lax')
+                    response.set_cookie(
+                        'session_role', user['role'], httponly=True, secure=True, samesite='Lax')
                     return response
             return 'Неверные учетные данные', 401
         except Exception as e:
@@ -101,10 +100,11 @@ def register():
             users.append(new_user)
             save_json('users.json', users)
 
-            # Устанавливаем Cookie
             response = make_response(redirect(url_for('dashboard')))
             response.set_cookie('session_username', username,
                                 httponly=True, secure=True, samesite='Lax')
+            response.set_cookie(
+                'session_role', new_user['role'], httponly=True, secure=True, samesite='Lax')
             return response
         except Exception as e:
             print(e)
@@ -119,27 +119,33 @@ def check_username():
         username = data['user']
         users = load_json('users.json')
         exists = any(user['username'] == username for user in users)
-        return json.dumps({'exists': exists})
+        return jsonify({'exists': exists})  # используем jsonify
     except Exception as e:
         print(e)
         return "Error checking username", 500
 
 
-@app.route('/dashboard')
+@app.route('/dashboard')  # Только один маршрут /dashboard
 def dashboard():
     if 'session_username' in request.cookies:
         session['username'] = request.cookies['session_username']
-        users = load_json('users.json')
-        for user in users:
-            if user['username'] == session['username']:
-                session['role'] = user['role']
+        if 'session_role' in request.cookies:
+            session['role'] = request.cookies.get('session_role')
+        else:  # Если куки с ролью нет, получаем роль из users.json
+            users = load_json('users.json')
+            for user in users:
+                if user['username'] == session['username']:
+                    session['role'] = user['role']
+                    break  # break after getting role
+
         menu = request.args.get('menu')
-        subpage = request.args.get('subpage')
+        subpage = request.args.get('subpage')  # получаем subpage, если есть
+        # получаем subsubpage, если есть
+        subsubpage = request.args.get('subsubpage')
 
         user_pages_settings = load_json('user_pages_settings.json')
         pages = user_pages_settings.get(session['role'], [])
 
-        # Проверка доступности страницы для текущей роли
         allowed_menus = [page['name'] for page in pages]
         if menu not in allowed_menus:
             if session['role'] == 'admin':
@@ -151,24 +157,32 @@ def dashboard():
                     return "Страница не найдена", 404
                 menu = pages[0]["name"]
 
-        # Определение шаблона для рендеринга
-        # Определение шаблона для рендеринга
-        if menu is None and subpage is None:  # Главная страница дашборда
-            template = 'dashboard/main_dashboard.html'  # Шаблон для главной страницы
-        elif menu:  # Остальные страницы дашборда
-            if any(page['name'] == menu for page in pages):
-                if subpage and any(sp['name'] == subpage for sp in next((p['subpages'] for p in pages if p['name'] == menu), [])):
-                    template = f"dashboard_subsubpage/{menu}/{subpage}.html"
-                # Проверка наличия подстраниц у пункта меню
-                elif any(p.get('subpages') for p in pages if p['name'] == menu):
-                    template = f"dashboard_subsubpage/{menu}/{next((sp['name'] for sp in next(
-                        (p['subpages'] for p in pages if p['name'] == menu), [])), None)}.html"
-                else:  # Если подстраниц нет, отображаем страницу меню
-                    template = 'dashboard/main_dashboard.html'  # или любой другой подходящий шаблон
-        else:  # Если menu или subpage не существуют - 404
+        if menu is None and subpage is None and subsubpage is None:
+            template = 'dashboard/main_dashboard.html'
+        elif menu:
+            for page in pages:
+                if page['name'] == menu:
+                    # проверяем наличие subpage
+                    if subpage and any(sp['name'] == subpage for sp in page.get('subpages', [])):
+                        if subsubpage and any(ssp['name'] == subsubpage for ssp in next((sp.get('subpages', []) for sp in page.get('subpages', []) if sp['name'] == subpage), [])):
+                            template = f"dashboard_subsubpage/{
+                                menu}/{subsubpage}.html"
+                        else:
+                            template = f"dashboard_subsubpage/{menu}/{next((sp['name'] for sp in next(
+                                (p.get('subpages', [{}]) for p in pages if p['name'] == menu), [])), None)}.html"
+
+                    elif page.get('subpages'):  # если есть subpages но не указан subpage
+                        # отображаем страницу subpage
+                        template = f"dashboard_subpage/{menu}.html"
+                    else:  # нет subpages отображаем main_dashboard
+                        template = "dashboard/main_dashboard.html"
+                    break
+            else:  # страница menu не найдена
+                return "Страница не найдена", 404
+        else:
             return "Страница не найдена", 404
 
-        return render_template(template, menu=menu, pages=pages, subpage=subpage, username=session['username'], role=session['role'])
+        return render_template(template, menu=menu, pages=pages, subpage=subpage, subsubpage=subsubpage, username=session['username'], role=session['role'])
 
     return redirect(url_for('signin'))
 
@@ -195,7 +209,9 @@ def inventory_add():
             image_file = request.files.get('image')
             if image_file:
                 file_extension = os.path.splitext(image_file.filename)[1]
-                image_filename = data['name'] + file_extension
+                image_filename = secure_filename(
+                    # используем secure_filename
+                    data['name'] + file_extension)
                 image_path = os.path.join('static/images', image_filename)
                 image_file.save(image_path)
                 image = image_filename
@@ -210,15 +226,15 @@ def inventory_add():
             'image': image,
             'quantity': int(data['quantity']),
             'state': data['state'],
-            'image_type': image_type,
+            'image_type': int(image_type),  # конвертируем в int
             # 'price': int(data['price']),
         }
         inventory.append(new_inventory)
         save_json('inventory.json', inventory)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка добавления инвентаря", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/inventory_edit', methods=['POST'])
@@ -231,7 +247,9 @@ def inventory_edit():
             image_file = request.files.get('image')
             if image_file:
                 file_extension = os.path.splitext(image_file.filename)[1]
-                image_filename = data['edit-name'] + file_extension
+                image_filename = secure_filename(
+                    # используем secure_filename
+                    data['edit-name'] + file_extension)
                 image_path = os.path.join('static/images', image_filename)
                 image_file.save(image_path)
                 image = image_filename
@@ -247,14 +265,14 @@ def inventory_edit():
                 item['image'] = image
                 item['quantity'] = int(data['edit-quantity'])
                 item['state'] = data['edit-state']
-                item['image_type'] = image_type
+                item['image_type'] = int(image_type)  # конвертируем в int
                 # item['price'] = int(data['edit-price'])
                 break
         save_json('inventory.json', inventory)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка изменения инвентаря", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/inventory_delete', methods=['POST'])
@@ -266,24 +284,20 @@ def inventory_delete():
         updated_inventory = [
             item for item in inventory if item['id'] != inventory_id]
         save_json('inventory.json', updated_inventory)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(f"Ошибка удаления инвентаря: {e}")
-        if session.get('role') == 'admin':
-            return f"Ошибка удаления инвентаря: {e}", 500
-        else:
-            return "Ошибка удаления инвентаря", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/get_all_inventory')
 def get_all_inventory():
     try:
         inventory = load_json('inventory.json')
-        json_data = json.dumps(inventory, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(inventory)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading inventory", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 # Маршруты для assignments
@@ -302,21 +316,20 @@ def assign_inventory():
         }
         assignments.append(new_assignment)
         save_json('inventory_assignments.json', assignments)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка назначения инвентаря", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/get_all_assignments')
 def get_all_assignments():
     try:
         assignments = load_json('inventory_assignments.json')
-        json_data = json.dumps(assignments, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(assignments)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading assignments", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 # Маршруты для purchases
@@ -334,10 +347,10 @@ def purchase_add():
         }
         purchases.append(new_purchase)
         save_json('purchase_plans.json', purchases)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка добавления плана закупки", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/purchase_edit', methods=['POST'])
@@ -354,21 +367,20 @@ def purchase_edit():
                 item['supplier'] = data['edit-supplier']
                 break
         save_json('purchase_plans.json', purchases)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка изменения плана закупки", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/get_all_purchases')
 def get_all_purchases():
     try:
         purchases = load_json('purchase_plans.json')
-        json_data = json.dumps(purchases, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(purchases)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading purchases", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 # Маршруты для reports
@@ -376,33 +388,30 @@ def get_all_purchases():
 def get_all_inventory_for_report():
     try:
         inventory = load_json('inventory.json')
-        json_data = json.dumps(inventory, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(inventory)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading inventory", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/get_all_assignments_for_report')
 def get_all_assignments_for_report():
     try:
         assignments = load_json('inventory_assignments.json')
-        json_data = json.dumps(assignments, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(assignments)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading assignments", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/get_all_purchases_for_report')
 def get_all_purchases_for_report():
     try:
         purchases = load_json('purchase_plans.json')
-        json_data = json.dumps(purchases, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(purchases)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading purchases", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 # Маршруты для requests
@@ -423,10 +432,10 @@ def request_create():
         }
         requests.append(new_request)
         save_json('requests.json', requests)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка создания запроса", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/request_update_status', methods=['POST'])
@@ -442,21 +451,20 @@ def request_update_status():
                 item['status'] = status
                 break
         save_json('requests.json', requests)
-        return '', 200
+        return jsonify({'status': 'success'})  # используем jsonify
     except Exception as e:
         print(e)
-        return "Ошибка обновления статуса заявки", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @app.route('/dashboard/get_all_requests')
 def get_all_requests():
     try:
         requests = load_json('requests.json')
-        json_data = json.dumps(requests, ensure_ascii=False, indent=4)
-        return Response(json_data, mimetype='application/json; charset=utf-8')
+        return jsonify(requests)  # используем jsonify
     except Exception as e:
         print(e)
-        return "Error loading requests", 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 def get_user_id_from_username(username):
@@ -474,6 +482,7 @@ def logout():
     session.pop('role', None)
     resp = make_response(redirect(url_for('signin')))
     resp.set_cookie('session_username', '', expires=0)
+    resp.set_cookie('session_role', '', expires=0)  # удаляем куки для роли
     return resp
 
 

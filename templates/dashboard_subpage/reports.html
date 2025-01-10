@@ -1,21 +1,14 @@
-<div class="content"></div>
-<nav class="dashboard-nav">
-  <button
-    class="dashboard-button"
-    onclick="loadSubSubContent('reports', 'all_inventory')"
-  >
-    Весь инвентарь
-  </button>
-  <button
-    class="dashboard-button"
-    onclick="loadSubSubContent('reports', 'all_assignments')"
-  >
-    Закрепленный инвентарь
-  </button>
-  <button
-    class="dashboard-button"
-    onclick="loadSubSubContent('reports', 'all_purchases')"
-  >
-    Планы закупок
-  </button>
-</nav>
+<div class="content">
+  <nav class="dashboard-nav">
+    {% for subpage in pages | selectattr('name', 'equalto', menu) |
+    map(attribute='subpages') | list | first | sort(attribute='order') %}
+
+    <a
+      href="/dashboard?menu={{ menu }}&subpage={{ subpage.name }}&subsubpage={{ subpage.name }}"
+      class="dashboard-button {% if subsubpage == subpage.name %} active {% endif %}"
+      >{{ subpage.name }}</a
+    >
+
+    {% endfor %}
+  </nav>
+</div>

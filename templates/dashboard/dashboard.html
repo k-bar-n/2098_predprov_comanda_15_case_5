@@ -7,24 +7,22 @@ content %}
   <div class="menu">
     <nav class="dashboard-nav">
       {% for page in pages %}
-      <div
-        class="dashboard-menu-item {% if not page.subpages %}disabled{% endif %}"
-      >
-        <button
-          class="dashboard-button {% if menu == page.name or (menu is none and subpage is none and page.name == 'main') %} active {% endif %}"
-          data-menu="{{ page.name }}"
+      <div class="dashboard-menu-item">
+        <a
+          href="/dashboard?menu={{ page.name }}"
+          class="dashboard-button {% if menu == page.name or (menu is none and page.name == 'main') %} active {% endif %}"
         >
           {{ page.name }}
-        </button>
+        </a>
 
         {% if page.subpages %}
         <div class="dropdown-content">
           {% for subpage in page.subpages | sort(attribute='order') %}
           <a
             class="dashboard-subpage-button"
-            data-menu="{{ page.name }}"
-            data-subpage="{{ subpage.name }}"
             href="/dashboard?menu={{ page.name }}&subpage={{ subpage.name }}"
+            <--
+            Изменено
           >
             {{ subpage.name }}
           </a>
@@ -37,8 +35,11 @@ content %}
   </div>
 
   <div class="content">{% block dashboard_content %}{% endblock %}</div>
-
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script>
+    const role = "{{ role }}";
+  </script>
   <a href="{{ url_for('logout') }}">Logout</a>
 </div>
 {% endblock %}

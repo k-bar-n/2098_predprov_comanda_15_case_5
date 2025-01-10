@@ -1,4 +1,8 @@
 function initRequestCreate() {
+    if (role === "admin") { // Добавляем проверку
+        return;
+    }
+
     const createRequestForm = document.getElementById('create-request-form');
     const errorMessage = document.getElementById('error-message-requests');
 
@@ -26,6 +30,5 @@ function initRequestCreate() {
         });
     }
 }
-document.addEventListener('DOMContentLoaded', function () {
-    initRequestCreate()
-});
+
+document.addEventListener('DOMContentLoaded', initRequestCreate);

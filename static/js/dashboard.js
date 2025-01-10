@@ -3,21 +3,11 @@ function initDashboard() {
     const menu = urlParams.get('menu');
     const subpage = urlParams.get('subpage');
 
-    let userPagesSettings = null;
+    loadContent(menu, subpage, true);
 
-    fetch('/data/user_pages_settings.json')
-        .then(response => response.json())
-        .then(settings => {
-            userPagesSettings = settings;
-            initMenu(menu, subpage, userPagesSettings);
-            loadContent(menu, subpage, true);
-        })
-        .catch(error => {
-            console.error("Ошибка при загрузке настроек страниц:", error);
-            loadContent(null, null, true);
-        });
+    const role = getCookie('session_role');
 
-    function initMenu(menuParam, subpageParam, settings) {
+    function initMenu(settings) {
         const menuItems = document.querySelectorAll('.dashboard-menu-item');
 
         menuItems.forEach(menuItem => {
@@ -25,39 +15,46 @@ function initDashboard() {
             const dropdown = menuItem.querySelector('.dropdown-content');
             const menu = button.getAttribute('data-menu');
 
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                if (dropdown) {
+                    if (dropdown.style.display === "block") {
+                        dropdown.style.display = "none";
+                    } else {
+                        dropdown.style.display = "block";
+                    }
+                } else {
+                    window.location.href = `/dashboard?menu=${menu}`;
+                }
+            });
 
             if (dropdown) {
-                button.addEventListener('click', function () {
-                    document.querySelectorAll('.dropdown-content').forEach(otherDropdown => {
-                        if (otherDropdown !== dropdown) {
-                            otherDropdown.style.display = 'none';
-                        }
+                dropdown.querySelectorAll('a').forEach(subpageButton => {
+                    subpageButton.addEventListener('click', function (event) {
+                        const subpage = this.getAttribute('data-subpage');
+                        event.preventDefault();
+                        loadContent(menu, subpage);
                     });
-
-                    toggleSubmenu(dropdown);
-
-                    const buttons = document.querySelectorAll(".dashboard-button");
-                    buttons.forEach((btn) => btn.classList.remove("active"));
-                    button.classList.add("active");
                 });
             }
         });
-
-        function toggleSubmenu(dropdown) {
-            if (dropdown.style.display === "block") {
-                dropdown.style.display = "none";
-            } else {
-                dropdown.style.display = "block";
-            }
-        }
     }
+    fetch('/data/user_pages_settings.json')
+        .then(response => response.json())
+        .then(settings => {
+            initMenu(settings);
+        })
+        .catch(error => console.error("Ошибка при загрузке настроек страниц:", error));
 }
+
 
 function loadContent(menu, subpage = null, firstLoad = false) {
     const contentDiv = document.querySelector('.content');
+
     if (!firstLoad && menu == null) {
         return
     }
+
     let url = '/dashboard';
     if (menu) {
         url += `?menu=${menu}`;
@@ -73,7 +70,7 @@ function loadContent(menu, subpage = null, firstLoad = false) {
 
             if (menu) {
                 if (menu === 'main') {
-                    // ... (логика для главной страницы)
+
                 } else if (menu === "inventory_management") {
                     if (subpage === "all_inventory") {
                         loadAllInventory();
@@ -109,6 +106,7 @@ function loadContent(menu, subpage = null, firstLoad = false) {
                 }
             }
         })
+
         .catch(error => {
             console.error("Ошибка при загрузке контента:", error);
             contentDiv.innerHTML = "<p>Ошибка при загрузке контента.</p>";
