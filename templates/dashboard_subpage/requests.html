@@ -4,11 +4,15 @@
     map(attribute='subpages') | list | first | sort(attribute='order') %}
 
     <a
-      href="/dashboard?menu={{ menu }}&subpage={{ subpage.name }}&subsubpage={{ subpage.name }}"
       class="dashboard-button {% if subsubpage == subpage.name %} active {% endif %}"
+      data-menu="{{ menu }}"
+      data-subpage="{{ subpage.name }}"
+      onclick="loadSubpage('{{ menu }}', '{{ subpage.name }}')"
       >{{ subpage.name }}</a
     >
 
     {% endfor %}
   </nav>
+  <div id="subsubpage-content"></div>
+  <div id="error-message" class="error-message"></div>
 </div>

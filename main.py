@@ -168,9 +168,7 @@ def dashboard():
                             template = f"dashboard_subsubpage/{
                                 menu}/{subsubpage}.html"
                         else:
-                            template = f"dashboard_subsubpage/{menu}/{next((sp['name'] for sp in next(
-                                (p.get('subpages', [{}]) for p in pages if p['name'] == menu), [])), None)}.html"
-
+                            template = f"dashboard_subpage/{menu}.html"
                     elif page.get('subpages'):  # если есть subpages но не указан subpage
                         # отображаем страницу subpage
                         template = f"dashboard_subpage/{menu}.html"

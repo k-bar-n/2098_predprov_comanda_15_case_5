@@ -1,45 +1,48 @@
 function loadAllInventoryForReport() {
-    const allInventoryReports = document.getElementById("all_inventory_reports");
-    const errorMessage = document.getElementById('error-message-reports');
-    if (!allInventoryReports) {
-        console.error("Элемент с id 'all_inventory_reports' не найден.");
+  const reportContainer = document.getElementById("all_inventory_reports");
+  const errorMessage = document.getElementById("error-message-reports");
+
+  fetch("/dashboard/get_all_inventory_for_report")
+    .then((response) => response.json())
+    .then((inventory) => {
+      reportContainer.innerHTML = "";
+      if (inventory.length === 0) {
+        reportContainer.innerHTML = "<p>Нет инвентаря.</p>";
         return;
-    }
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/dashboard/get_all_inventory_for_report', false);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            allInventoryReports.innerHTML = "";
-            const data = JSON.parse(xhr.responseText);
-            const table = document.createElement('table');
-            table.classList.add('report-table');
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            ['ID', 'Название', 'Количество', 'Состояние'].forEach(text => {
-                const th = document.createElement('th');
-                th.textContent = text;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            data.forEach(inventory => {
-                const row = document.createElement('tr');
-                ['id', 'name', 'quantity', 'state'].forEach(key => {
-                    const td = document.createElement('td');
-                    td.textContent = inventory[key];
-                    row.appendChild(td);
-                });
-                tbody.appendChild(row);
-            });
-            table.appendChild(tbody);
-            allInventoryReports.appendChild(table);
-        } else {
-            showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
-        }
-    };
-    xhr.onerror = function () {
-        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
-    };
-    xhr.send();
+      }
+      const table = document.createElement("table");
+      table.classList.add("report-table");
+      table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Количество</th>
+                        <th>Состояние</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+      const tbody = table.querySelector("tbody");
+      inventory.forEach((item) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.state}</td>
+                `;
+        tbody.appendChild(row);
+      });
+      reportContainer.appendChild(table);
+    })
+    .catch((error) => {
+      console.error("Ошибка при загрузке отчета по инвентарю:", error);
+      showErrorMessage(
+        "Ошибка при загрузке отчета по инвентарю.",
+        errorMessage
+      );
+    });
 }
+
+document.addEventListener("DOMContentLoaded", loadAllInventoryForReport);

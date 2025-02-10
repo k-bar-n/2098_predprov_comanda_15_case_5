@@ -1,34 +1,41 @@
 function initRequestCreate() {
-    if (role === "admin") { // Добавляем проверку
-        return;
-    }
+  const form = document.getElementById("create-request-form");
+  const errorMessage = document.getElementById("error-message-requests");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-    const createRequestForm = document.getElementById('create-request-form');
-    const errorMessage = document.getElementById('error-message-requests');
+    const inventoryId = form.inventory_id.value;
+    const quantityRequested = form.quantity_requested.value;
+    const requestType = form.request_type.value;
 
-    if (createRequestForm) {
-        createRequestForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(createRequestForm);
-            const jsonData = Object.fromEntries(formData.entries());
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/dashboard/request_create', false);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    clearErrorMessage("error-message-requests");
-                    loadAllRequests();
-                    createRequestForm.reset();
-                } else {
-                    showErrorMessage(xhr.responseText, errorMessage);
-                }
-            };
-            xhr.onerror = function () {
-                showErrorMessage('Произошла ошибка при отправке данных', errorMessage);
-            };
-            xhr.send(JSON.stringify(jsonData));
-        });
-    }
+    fetch("/dashboard/request_create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        inventory_id: inventoryId,
+        quantity_requested: quantityRequested,
+        request_type: requestType,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          showErrorMessage("Заявка успешно создана.", errorMessage);
+        } else {
+          showErrorMessage("Ошибка при создание заявки.", errorMessage);
+        }
+        form.reset();
+        setTimeout(() => {
+          errorMessage.style.display = "none";
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Ошибка при отправке данных:", error);
+        showErrorMessage("Произошла ошибка при отправке данных.", errorMessage);
+      });
+  });
 }
 
-document.addEventListener('DOMContentLoaded', initRequestCreate);
+document.addEventListener("DOMContentLoaded", initRequestCreate);

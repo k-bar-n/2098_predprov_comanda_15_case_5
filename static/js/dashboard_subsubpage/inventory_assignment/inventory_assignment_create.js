@@ -1,33 +1,42 @@
 function initInventoryAssignmentCreate() {
-    const assignInventoryForm = document.getElementById('assign-inventory-form');
-    const errorMessage = document.getElementById('error-message-assignments');
+  const assignForm = document.getElementById("assign-inventory-form");
+  const errorMessage = document.getElementById("error-message-assignments");
 
+  assignForm.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-    if (assignInventoryForm) {
-        assignInventoryForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(assignInventoryForm);
-            const jsonData = Object.fromEntries(formData.entries());
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/dashboard/assign_inventory', false);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    clearErrorMessage("error-message-assignments");
-                    loadAllAssignments();
-                    assignInventoryForm.reset();
-                } else {
-                    showErrorMessage(xhr.responseText, errorMessage);
-                }
-            };
-            xhr.onerror = function () {
-                showErrorMessage('Произошла ошибка при отправке данных', errorMessage);
-            };
-            xhr.send(JSON.stringify(jsonData));
-        });
-    }
+    const userId = assignForm.user_id.value;
+    const inventoryId = assignForm.inventory_id.value;
+    const quantityAssigned = assignForm.quantity_assigned.value;
+
+    fetch("/dashboard/assign_inventory", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        inventory_id: inventoryId,
+        quantity_assigned: quantityAssigned,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          showErrorMessage("Инвентарь успешно закреплен.", errorMessage);
+        } else {
+          showErrorMessage("Ошибка при назначении инвентаря.", errorMessage);
+        }
+        assignForm.reset();
+        setTimeout(() => {
+          errorMessage.style.display = "none";
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Ошибка при отправке данных:", error);
+        showErrorMessage("Произошла ошибка при отправке данных.", errorMessage);
+      });
+  });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    initInventoryAssignmentCreate();
-});
+document.addEventListener("DOMContentLoaded", initInventoryAssignmentCreate);

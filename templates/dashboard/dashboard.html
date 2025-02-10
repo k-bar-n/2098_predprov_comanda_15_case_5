@@ -8,21 +8,22 @@ content %}
     <nav class="dashboard-nav">
       {% for page in pages %}
       <div class="dashboard-menu-item">
-        <a
-          href="/dashboard?menu={{ page.name }}"
+        <button
           class="dashboard-button {% if menu == page.name or (menu is none and page.name == 'main') %} active {% endif %}"
+          data-menu="{{ page.name }}"
+          onclick="loadSubpage('{{ page.name }}', null)"
         >
           {{ page.name }}
-        </a>
+        </button>
 
         {% if page.subpages %}
         <div class="dropdown-content">
           {% for subpage in page.subpages | sort(attribute='order') %}
           <a
             class="dashboard-subpage-button"
-            href="/dashboard?menu={{ page.name }}&subpage={{ subpage.name }}"
-            <--
-            Изменено
+            data-menu="{{ page.name }}"
+            data-subpage="{{ subpage.name }}"
+            onclick="loadSubpage('{{ page.name }}', '{{ subpage.name }}')"
           >
             {{ subpage.name }}
           </a>
@@ -39,6 +40,17 @@ content %}
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
   <script>
     const role = "{{ role }}";
+    function loadSubpage(menu, subpage) {
+      loadContent(menu, subpage); // Вызываем loadContent из dashboard.js
+      const buttons = document.querySelectorAll(".dashboard-button");
+      buttons.forEach((btn) => btn.classList.remove("active"));
+      // Find the clicked button based on data-menu and data-subpage and make it active
+      document
+        .querySelector(
+          `[data-menu="${menu}"]${subpage ? `[data-subpage="${subpage}"]` : ""}`
+        )
+        .classList.add("active");
+    }
   </script>
   <a href="{{ url_for('logout') }}">Logout</a>
 </div>

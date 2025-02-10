@@ -1,41 +1,50 @@
 function loadAllPurchasesForReport() {
-    const allPurchasePlansReports = document.getElementById("all_purchase_plans_reports");
-    const errorMessage = document.getElementById('error-message-reports');
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/dashboard/get_all_purchases_for_report', false);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            allPurchasePlansReports.innerHTML = "";
-            const data = JSON.parse(xhr.responseText);
-            const table = document.createElement('table');
-            table.classList.add('report-table');
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            ['ID', 'Inventory ID', 'Количество', 'Цена', 'Поставщик'].forEach(text => {
-                const th = document.createElement('th');
-                th.textContent = text;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            data.forEach(purchase => {
-                const row = document.createElement('tr');
-                ['id', 'inventory_id', 'quantity', 'price', 'supplier'].forEach(key => {
-                    const td = document.createElement('td');
-                    td.textContent = purchase[key];
-                    row.appendChild(td);
-                });
-                tbody.appendChild(row);
-            });
-            table.appendChild(tbody);
-            allPurchasePlansReports.appendChild(table);
-        } else {
-            showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
-        }
-    };
-    xhr.onerror = function () {
-        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
-    };
-    xhr.send();
+  const reportContainer = document.getElementById("all_purchase_plans_reports");
+  const errorMessage = document.getElementById("error-message-reports");
+
+  fetch("/dashboard/get_all_purchases_for_report")
+    .then((response) => response.json())
+    .then((purchases) => {
+      reportContainer.innerHTML = "";
+      if (purchases.length === 0) {
+        reportContainer.innerHTML = "<p>Нет планов закупок.</p>";
+        return;
+      }
+      const table = document.createElement("table");
+      table.classList.add("report-table");
+      table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID инвентаря</th>
+                        <th>Количество</th>
+                         <th>Цена</th>
+                        <th>Поставщик</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+      const tbody = table.querySelector("tbody");
+      purchases.forEach((purchase) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                    <td>${purchase.id}</td>
+                    <td>${purchase.inventory_id}</td>
+                    <td>${purchase.quantity}</td>
+                    <td>${purchase.price}</td>
+                    <td>${purchase.supplier}</td>
+                `;
+        tbody.appendChild(row);
+      });
+      reportContainer.appendChild(table);
+    })
+    .catch((error) => {
+      console.error("Ошибка получения отчета по планам закупок:", error);
+      showErrorMessage(
+        "Ошибка при загрузке отчета по планам закупок.",
+        errorMessage
+      );
+    });
 }
+
+document.addEventListener("DOMContentLoaded", loadAllPurchasesForReport);

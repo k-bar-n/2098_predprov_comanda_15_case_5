@@ -1,23 +1,28 @@
 function loadAllPurchases() {
-    const allPurchasePlans = document.getElementById("all_purchase_plans");
-    const errorMessage = document.getElementById('error-message-purchases');
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/dashboard/get_all_purchases', false);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            allPurchasePlans.innerHTML = "";
-            const data = JSON.parse(xhr.responseText);
-            data.forEach((purchase) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = `ID: ${purchase.id}, Inventory ID: ${purchase.inventory_id}, Количество: ${purchase.quantity}, Цена: ${purchase.price}, Поставщик: ${purchase.supplier}`;
-                allPurchasePlans.appendChild(listItem);
-            });
-        } else {
-            showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
-        }
-    };
-    xhr.onerror = function () {
-        showErrorMessage('Произошла ошибка при загрузке данных', errorMessage);
-    };
-    xhr.send();
+  const purchaseList = document.getElementById("all_purchase_plans");
+  const errorMessage = document.getElementById("error-message-purchases");
+  fetch("/dashboard/get_all_purchases")
+    .then((response) => response.json())
+    .then((purchases) => {
+      purchaseList.innerHTML = "";
+      purchases.forEach((purchase) => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+                    ID: ${purchase.id}, 
+                    Inventory ID: ${purchase.inventory_id}, 
+                    Quantity: ${purchase.quantity},
+                    Price: ${purchase.price},
+                    Supplier: ${purchase.supplier}
+                `;
+        purchaseList.appendChild(listItem);
+      });
+    })
+    .catch((error) => {
+      console.error("Ошибка получения планов закупок:", error);
+      showErrorMessage(
+        "Ошибка при загрузке данных о планах закупок.",
+        errorMessage
+      );
+    });
 }
+document.addEventListener("DOMContentLoaded", loadAllPurchases);
